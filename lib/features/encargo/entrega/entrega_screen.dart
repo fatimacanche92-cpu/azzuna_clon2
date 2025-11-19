@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_app/core/models/entrega_model.dart';
-import 'package:flutter_app/core/models/destinatario_model.dart';
 import 'package:flutter_app/core/services/encargo_service.dart';
 
 class EntregaScreen extends ConsumerStatefulWidget {
@@ -17,13 +16,13 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
   final _formKey = GlobalKey<FormState>();
   DeliveryType _deliveryType = DeliveryType.pasaPorEl;
   PaymentStatus? _paymentStatus;
-  NoteType? _noteType;
 
   final _pickupNameController = TextEditingController();
   final _pickupPhoneController = TextEditingController();
   final _deliveryAddressController = TextEditingController();
   final _recipientNameController = TextEditingController();
   final _noteController = TextEditingController();
+  final _remitenteController = TextEditingController();
 
   @override
   void initState() {
@@ -32,12 +31,12 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
     if (existing != null) {
       _deliveryType = existing.deliveryType ?? DeliveryType.pasaPorEl;
       _paymentStatus = existing.paymentStatus;
-      _noteType = existing.noteType;
       _pickupNameController.text = existing.pickupName ?? '';
       _pickupPhoneController.text = existing.pickupPhone ?? '';
       _deliveryAddressController.text = existing.deliveryAddress ?? '';
       _recipientNameController.text = existing.recipientName ?? '';
       _noteController.text = existing.note ?? '';
+      _remitenteController.text = existing.remitente ?? '';
     }
   }
 
@@ -48,11 +47,13 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
     _deliveryAddressController.dispose();
     _recipientNameController.dispose();
     _noteController.dispose();
+    _remitenteController.dispose();
     super.dispose();
   }
 
   void _onSave() {
     if (_formKey.currentState!.validate()) {
+      final remitente = _remitenteController.text.isEmpty ? 'Anónimo' : _remitenteController.text;
       final newEntrega = Entrega(
         deliveryType: _deliveryType,
         paymentStatus: _paymentStatus,
@@ -60,8 +61,8 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
         pickupPhone: _deliveryType == DeliveryType.pasaPorEl ? _pickupPhoneController.text : null,
         deliveryAddress: _deliveryType == DeliveryType.porEntrega ? _deliveryAddressController.text : null,
         recipientName: _deliveryType == DeliveryType.porEntrega ? _recipientNameController.text : null,
-        noteType: _deliveryType == DeliveryType.porEntrega ? _noteType : null,
         note: _deliveryType == DeliveryType.porEntrega ? _noteController.text : null,
+        remitente: _deliveryType == DeliveryType.porEntrega ? remitente : null,
       );
       ref.read(encargoServiceProvider.notifier).updateEntrega(newEntrega);
       context.pop();
@@ -150,31 +151,20 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
           validator: (v) => v!.isEmpty ? 'El nombre es obligatorio' : null,
         ),
         const SizedBox(height: 16),
+        TextFormField(
+          controller: _remitenteController,
+          decoration: const InputDecoration(labelText: 'Remitente (Opcional)', border: OutlineInputBorder()),
+        ),
+        const SizedBox(height: 16),
         _buildPaymentStatusDropdown(),
         const SizedBox(height: 24),
         Text('Nota', style: Theme.of(context).textTheme.titleMedium),
-        Row(
-          children: [
-            Radio<NoteType>(
-              value: NoteType.publica,
-              groupValue: _noteType,
-              onChanged: (v) => setState(() => _noteType = v),
-            ),
-            const Text('Pública'),
-            Radio<NoteType>(
-              value: NoteType.anonima,
-              groupValue: _noteType,
-              onChanged: (v) => setState(() => _noteType = v),
-            ),
-            const Text('Anónima'),
-          ],
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _noteController,
+          decoration: const InputDecoration(labelText: 'Escribir nota...', border: OutlineInputBorder()),
+          maxLines: 3,
         ),
-        if (_noteType != null)
-          TextFormField(
-            controller: _noteController,
-            decoration: const InputDecoration(labelText: 'Escribir nota...', border: OutlineInputBorder()),
-            maxLines: 3,
-          ),
       ],
     );
   }
@@ -185,7 +175,6 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
       decoration: const InputDecoration(labelText: 'Estado de pago', border: OutlineInputBorder()),
       items: const [
         DropdownMenuItem(value: PaymentStatus.pagado, child: Text('Pagado')),
-        DropdownMenuItem(value: PaymentStatus.conAnticipo, child: Text('Con Anticipo')),
       ],
       onChanged: (value) => setState(() => _paymentStatus = value),
       validator: (v) => v == null ? 'Selecciona un estado de pago' : null,

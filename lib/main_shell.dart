@@ -37,8 +37,8 @@ class MainShell extends StatelessWidget {
             label: 'Cámara',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.payment),
-            label: 'Pagos',
+            icon: Icon(Icons.bar_chart),
+            label: 'Estadísticas',
           ),
         ],
         selectedItemColor: Colors.purple,

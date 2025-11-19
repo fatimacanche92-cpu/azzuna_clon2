@@ -19,8 +19,8 @@ class Transaction {
   });
 }
 
-class PaymentPage extends StatelessWidget {
-  const PaymentPage({super.key});
+class StatisticsPage extends StatelessWidget {
+  const StatisticsPage({super.key});
 
   // Dummy data for demonstration
   static final List<Transaction> _transactions = [
@@ -34,7 +34,7 @@ class PaymentPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Pagos',
+          'Estadísticas',
           style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         backgroundColor: Colors.white,

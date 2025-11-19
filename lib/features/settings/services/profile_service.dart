@@ -18,7 +18,9 @@ class ProfileService {
     try {
       final userId = _getUserId();
       final data =
-          await _supabase.from('profiles').select().eq('id', userId).single();
+          await _supabase.from('profiles').select(
+            'id, full_name, shop_name, email, phone, address, schedule, shop_description, social_links, avatar_url'
+          ).eq('id', userId).single();
       return Profile.fromJson(data);
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST116') {
@@ -62,6 +64,7 @@ class ProfileService {
         ..remove('id')
         ..remove('email');
 
+      print('Updating profile with: $updates');
       await _supabase.from('profiles').update(updates).eq('id', userId);
     } catch (e) {
       print('Error in updateProfile: $e');
@@ -83,7 +86,7 @@ class ProfileService {
 
       final publicUrl = _supabase.storage.from('avatars').getPublicUrl(filePath);
       
-      await _supabase.from('profiles').update({'avatar_url': publicUrl}).eq('user_id', userId);
+      await _supabase.from('profiles').update({'avatar_url': publicUrl}).eq('id', userId);
 
       return publicUrl;
     } catch (e) {

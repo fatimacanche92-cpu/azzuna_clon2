@@ -13,7 +13,6 @@ class PagoScreen extends ConsumerStatefulWidget {
 
 class _PagoScreenState extends ConsumerState<PagoScreen> {
   PaymentMethod? _paymentMethod;
-  CashPaymentStatus? _cashPaymentStatus;
 
   @override
   void initState() {
@@ -21,7 +20,6 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
     final existing = ref.read(encargoServiceProvider).pago;
     if (existing != null) {
       _paymentMethod = existing.paymentMethod;
-      _cashPaymentStatus = existing.cashPaymentStatus;
     }
   }
 
@@ -35,14 +33,23 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
     
     final newPago = Pago(
       paymentMethod: _paymentMethod,
-      cashPaymentStatus: _paymentMethod == PaymentMethod.efectivo ? _cashPaymentStatus : null,
     );
     ref.read(encargoServiceProvider.notifier).updatePago(newPago);
-    context.pop();
+    // Here you would normally proceed to a real payment gateway
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Pedido completado (simulado)')),
+    );
+    context.go('/'); // Navigate to home after completion
   }
 
   @override
   Widget build(BuildContext context) {
+    final encargo = ref.watch(encargoServiceProvider);
+    final arreglo = encargo.arreglo;
+    const price = 750.0; // Hardcoded price
+    const shippingCost = 100.0; // Hardcoded shipping
+    const total = price + shippingCost;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Paso 4: Pago'),
@@ -50,6 +57,32 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // Resumen del Cobro
+          Text('Resumen del Cobro', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 16),
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSummaryRow('Arreglo', arreglo?.flowerType ?? 'No seleccionado'),
+                  _buildSummaryRow('Tamaño', arreglo?.size?.name.toUpperCase() ?? 'N/A'),
+                  _buildSummaryRow('Colores', arreglo?.colors.join(', ') ?? 'N/A'),
+                  const Divider(height: 24),
+                  _buildSummaryRow('Precio', '\$${price.toStringAsFixed(2)}'),
+                  _buildSummaryRow('Costo de Envío', '\$${shippingCost.toStringAsFixed(2)}'),
+                  const Divider(height: 24),
+                  _buildSummaryRow('Total', '\$${total.toStringAsFixed(2)}', isTotal: true),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // Métodos de Pago
           Text('Métodos de Pago', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 16),
           RadioListTile<PaymentMethod>(
@@ -59,42 +92,43 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
             onChanged: (v) => setState(() => _paymentMethod = v),
           ),
           RadioListTile<PaymentMethod>(
-            title: const Text('PayPal'),
-            value: PaymentMethod.paypal,
+            title: const Text('Visa'),
+            value: PaymentMethod.visa,
             groupValue: _paymentMethod,
             onChanged: (v) => setState(() => _paymentMethod = v),
           ),
           RadioListTile<PaymentMethod>(
-            title: const Text('Efectivo'),
-            value: PaymentMethod.efectivo,
+            title: const Text('PayPal'),
+            value: PaymentMethod.paypal,
             groupValue: _paymentMethod,
             onChanged: (v) => setState(() => _paymentMethod = v),
   
           ),
-          if (_paymentMethod == PaymentMethod.efectivo)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: DropdownButtonFormField<CashPaymentStatus>(
-                value: _cashPaymentStatus,
-                decoration: const InputDecoration(
-                  labelText: 'Estado del pago en efectivo',
-                  border: OutlineInputBorder(),
-                ),
-                items: const [
-                  DropdownMenuItem(value: CashPaymentStatus.pendiente, child: Text('Pendiente')),
-                  DropdownMenuItem(value: CashPaymentStatus.pagado, child: Text('Pagado')),
-                ],
-                onChanged: (value) => setState(() => _cashPaymentStatus = value),
-              ),
-            ),
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: _onSave,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text('Guardar y Pagar'),
+            child: const Text('Confirmar Pago'),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(String title, String value, {bool isTotal = false}) {
+    final style = Theme.of(context).textTheme.bodyLarge?.copyWith(
+          fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+          fontSize: isTotal ? 18 : 16,
+        );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: style),
+          Text(value, style: style),
         ],
       ),
     );

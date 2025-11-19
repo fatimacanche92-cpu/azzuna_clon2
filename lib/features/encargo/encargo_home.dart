@@ -49,14 +49,7 @@ class EncargoHomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             _EncargoStepCard(
-              title: '3. Destinatario',
-              subtitle: 'Información de la persona que recibe.',
-              isCompleted: encargo.isDestinatarioCompleted,
-              onTap: () => context.push('/encargo/destinatario'),
-            ),
-            const SizedBox(height: 16),
-            _EncargoStepCard(
-              title: '4. Pago',
+              title: '3. Pago',
               subtitle: 'Selecciona el método de pago.',
               isCompleted: encargo.isPagoCompleted,
               onTap: () => context.push('/encargo/pago'),

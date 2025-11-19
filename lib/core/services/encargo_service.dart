@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/encargo_model.dart';
 import '../models/arreglo_model.dart';
 import '../models/entrega_model.dart';
-import '../models/destinatario_model.dart';
 import '../models/pago_model.dart';
 
 // 1. State Notifier
@@ -17,10 +16,6 @@ class EncargoStateNotifier extends StateNotifier<Encargo> {
     state = state.copyWith(entrega: entrega);
   }
 
-  void updateDestinatario(Destinatario destinatario) {
-    state = state.copyWith(destinatario: destinatario);
-  }
-
   void updatePago(Pago pago) {
     state = state.copyWith(pago: pago);
   }
@@ -32,7 +27,6 @@ class EncargoStateNotifier extends StateNotifier<Encargo> {
   // Getters for easy access in the UI
   Arreglo? get arreglo => state.arreglo;
   Entrega? get entrega => state.entrega;
-  Destinatario? get destinatario => state.destinatario;
   Pago? get pago => state.pago;
 }
 

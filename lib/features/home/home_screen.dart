@@ -12,24 +12,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 1; // Default to the 'Home' icon (camera)
 
-  void _onTabTapped(int index) {
-    // This is for the visual state of the bottom bar.
-    // Navigation is handled by the onTap of each item.
-    if (index == _currentIndex) return;
-    
-    switch (index) {
-      case 0:
-        context.push('/encargo');
-        break;
-      case 1:
-        context.push('/gallery');
-        break;
-      case 2:
-        // TODO: Create and navigate to payments screen
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -45,30 +27,45 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
-          children: const [
-            _SummaryCard(
-              title: 'Mini Calendario',
-              icon: Icons.calendar_today,
-              content: '3 recordatorios pendientes',
-            ),
-            SizedBox(height: 16),
+          children: [
+            const SizedBox(height: 16),
             _SummaryCard(
               title: 'Pedidos en Envío',
+              count: '5',
               icon: Icons.local_shipping,
-              content: '2 pedidos en camino',
+              color: Colors.pink.shade100,
+              onTap: () => context.push('/shipping-orders'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _SummaryCard(
-              title: 'Pedidos en Entrega / Recogida',
+              title: 'Pedidos por Recoger',
+              count: '3',
               icon: Icons.store,
-              content: '5 pedidos listos',
+              color: Colors.purple.shade100,
+              onTap: () => context.push('/pickup-orders'),
             ),
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: _onTabTapped,
+        onTap: (index) {
+          if (index == _currentIndex) return;
+          setState(() {
+            _currentIndex = index;
+          });
+          switch (index) {
+            case 0:
+              context.push('/encargo');
+              break;
+            case 1:
+              context.push('/gallery');
+              break;
+            case 2:
+              context.push('/statistics');
+              break;
+          }
+        },
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.arrow_upward),
@@ -79,8 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Galería',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.payment),
-            label: 'Pagos',
+            icon: Icon(Icons.bar_chart),
+            label: 'Estadísticas',
           ),
         ],
       ),
@@ -91,35 +88,58 @@ class _HomeScreenState extends State<HomeScreen> {
 class _SummaryCard extends StatelessWidget {
   const _SummaryCard({
     required this.title,
+    required this.count,
     required this.icon,
-    required this.content,
+    required this.color,
+    required this.onTap,
   });
 
   final String title;
+  final String count;
   final IconData icon;
-  final String content;
+  final Color color;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: theme.colorScheme.primary),
-                const SizedBox(width: 8),
-                Text(title, style: theme.textTheme.titleLarge),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(content, style: theme.textTheme.bodyMedium),
-          ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey.shade700),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    count,
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white,
+                    ),
+                  ),
+                  Icon(icon, size: 40, color: color),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Ver todos →',
+                style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+              ),
+            ],
+          ),
         ),
       ),
     );

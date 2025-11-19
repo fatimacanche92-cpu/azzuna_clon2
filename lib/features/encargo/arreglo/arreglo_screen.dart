@@ -15,8 +15,17 @@ class _ArregloScreenState extends ConsumerState<ArregloScreen> {
   final _formKey = GlobalKey<FormState>();
   ArregloSize? _size;
   final _colors = <String>{};
-  final _flowerTypeController = TextEditingController();
-  final _priceController = TextEditingController();
+  String? _selectedFlowerType;
+
+  // Mapa de flores y sus colores
+  final Map<String, List<String>> _flowerColorMap = {
+    'Rosas': ['Rojo', 'Rosa', 'Blanco', 'Amarillo', 'Naranja'],
+    'Girasoles': ['Amarillo', 'Naranja', 'Marrón'],
+    'Tulipanes': ['Morado', 'Rosa', 'Blanco', 'Rojo', 'Amarillo', 'Naranja'],
+    'Lirios': ['Blanco', 'Naranja', 'Rosa', 'Amarillo', 'Rojo'],
+  };
+
+  List<String> get _availableColors => _flowerColorMap[_selectedFlowerType] ?? [];
 
   @override
   void initState() {
@@ -24,16 +33,16 @@ class _ArregloScreenState extends ConsumerState<ArregloScreen> {
     final existingArreglo = ref.read(encargoServiceProvider).arreglo;
     if (existingArreglo != null) {
       _size = existingArreglo.size;
-      _colors.addAll(existingArreglo.colors);
-      _flowerTypeController.text = existingArreglo.flowerType ?? '';
-      _priceController.text = existingArreglo.price?.toString() ?? '';
+      _selectedFlowerType = existingArreglo.flowerType;
+      // Only add colors that are valid for the selected flower type
+      if (_selectedFlowerType != null && _flowerColorMap.containsKey(_selectedFlowerType)) {
+        _colors.addAll(existingArreglo.colors.where((c) => _availableColors.contains(c)));
+      }
     }
   }
 
   @override
   void dispose() {
-    _flowerTypeController.dispose();
-    _priceController.dispose();
     super.dispose();
   }
 
@@ -42,8 +51,7 @@ class _ArregloScreenState extends ConsumerState<ArregloScreen> {
       final newArreglo = Arreglo(
         size: _size,
         colors: _colors.toList(),
-        flowerType: _flowerTypeController.text,
-        price: double.tryParse(_priceController.text),
+        flowerType: _selectedFlowerType,
       );
       ref.read(encargoServiceProvider.notifier).updateArreglo(newArreglo);
       context.pop();
@@ -77,57 +85,54 @@ class _ArregloScreenState extends ConsumerState<ArregloScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Colors
-            Text('Colores', style: Theme.of(context).textTheme.titleMedium),
-            Wrap(
-              spacing: 8.0,
-              children: ['Rojo', 'Blanco', 'Rosa', 'Amarillo', 'Azul'].map((color) {
-                return FilterChip(
-                  label: Text(color),
-                  selected: _colors.contains(color),
-                  onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        _colors.add(color);
-                      } else {
-                        _colors.remove(color);
-                      }
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 24),
-
-            // Flower Type
-            TextFormField(
-              controller: _flowerTypeController,
+            // Flower Type Dropdown
+            DropdownButtonFormField<String>(
+              value: _selectedFlowerType,
               decoration: const InputDecoration(
                 labelText: 'Tipo de Flor',
                 border: OutlineInputBorder(),
               ),
+              items: _flowerColorMap.keys.map((String flower) {
+                return DropdownMenuItem<String>(
+                  value: flower,
+                  child: Text(flower),
+                );
+              }).toList(),
+              onChanged: (newValue) {
+                setState(() {
+                  _selectedFlowerType = newValue;
+                  // Clear colors when flower type changes
+                  _colors.clear();
+                });
+              },
+              validator: (value) => value == null ? 'Selecciona un tipo de flor' : null,
             ),
             const SizedBox(height: 24),
 
-            // Price
-            TextFormField(
-              controller: _priceController,
-              decoration: const InputDecoration(
-                labelText: 'Precio',
-                prefixText: '\$',
-                border: OutlineInputBorder(),
+            // Conditional Colors
+            if (_selectedFlowerType != null) ...[
+              Text('Colores', style: Theme.of(context).textTheme.titleMedium),
+              Wrap(
+                spacing: 8.0,
+                children: _availableColors.map((color) {
+                  return FilterChip(
+                    label: Text(color),
+                    selected: _colors.contains(color),
+                    onSelected: (selected) {
+                      setState(() {
+                        if (selected) {
+                          _colors.add(color);
+                        } else {
+                          _colors.remove(color);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'El precio es obligatorio';
-                }
-                if (double.tryParse(value) == null) {
-                  return 'Ingresa un número válido';
-                }
-                return null;
-              },
-            ),
+              const SizedBox(height: 24),
+            ],
+            
             const SizedBox(height: 32),
 
             ElevatedButton(

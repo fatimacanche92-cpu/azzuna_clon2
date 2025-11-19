@@ -14,7 +14,6 @@ import 'features/gallery/album_screen.dart';
 import 'features/encargo/encargo_home.dart';
 import 'features/encargo/arreglo/arreglo_screen.dart';
 import 'features/encargo/entrega/entrega_screen.dart';
-import 'features/encargo/destinatario/destinatario_screen.dart';
 import 'features/encargo/pago/pago_screen.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/register_page.dart';
@@ -23,7 +22,7 @@ import 'features/home/presentation/pages/welcome_page.dart';
 import 'features/settings/presentation/pages/profile_page.dart';
 import 'features/drafts/presentation/pages/drafts_page.dart';
 import 'features/catalogs/presentation/pages/catalogs_page.dart';
-import 'features/payment/presentation/pages/payment_page.dart';
+import 'features/statistics/presentation/pages/statistics_page.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -91,10 +90,6 @@ final appRouter = GoRouter(
           builder: (context, state) => const EntregaScreen(),
         ),
         GoRoute(
-          path: 'destinatario',
-          builder: (context, state) => const DestinatarioScreen(),
-        ),
-        GoRoute(
           path: 'pago',
           builder: (context, state) => const PagoScreen(),
         ),
@@ -138,10 +133,10 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-        // Branch for Payments
+        // Branch for Statistics
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/payment', builder: (context, state) => const PaymentPage()),
+            GoRoute(path: '/statistics', builder: (context, state) => const StatisticsPage()),
           ],
         ),
       ],
