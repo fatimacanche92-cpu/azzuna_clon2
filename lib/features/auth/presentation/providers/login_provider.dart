@@ -59,32 +59,23 @@ class LoginNotifier extends StateNotifier<LoginState> {
           error: 'Error al iniciar sesión. Por favor intenta de nuevo.',
         );
       }
-    } catch (e) {
-      String errorMessage = 'Error al iniciar sesión';
-      final errorString = e.toString();
+    } catch (e, s) {
+      // ignore: avoid_print
+      print('Error de login: $e');
+      // ignore: avoid_print
+      print('Stacktrace: $s');
 
-      // Debug: imprimir el error completo
-      // print('Error de login: $errorString');
-
-      if (errorString.contains('Invalid login credentials') ||
-          errorString.contains('invalid_credentials') ||
-          errorString.contains('Invalid credentials')) {
-        errorMessage = 'Correo o contraseña incorrectos';
-      } else if (errorString.contains('Email not confirmed') ||
-          errorString.contains('email_not_confirmed') ||
-          errorString.contains('email_not_verified')) {
-        errorMessage = 'email_not_verified';
-      } else if (errorString.contains('network') ||
-          errorString.contains('Network') ||
-          errorString.contains('connection')) {
-        errorMessage = 'Error de conexión. Verifica tu internet';
-      } else if (errorString.contains('User not found')) {
-        errorMessage = 'Usuario no encontrado. Verifica tu correo electrónico';
+      String errorMessage;
+      if (e.toString().contains('Invalid login credentials')) {
+        errorMessage = 'Correo o contraseña incorrectos.';
+      } else if (e.toString().contains('Email not confirmed')) {
+        errorMessage = 'Por favor, confirma tu correo electrónico para continuar.';
+      } else if (e.toString().contains('network') || e.toString().contains('Failed host lookup')) {
+        errorMessage = 'Error de red. Por favor, comprueba tu conexión a internet.';
       } else {
-        // Mostrar el error real para debugging
-        errorMessage = 'Error: ${e.toString().split(':').last.trim()}';
+        errorMessage = 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.';
       }
-
+      
       state = state.copyWith(isLoading: false, error: errorMessage);
     }
   }

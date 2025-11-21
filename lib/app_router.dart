@@ -19,10 +19,13 @@ import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/register_page.dart';
 import 'features/auth/presentation/pages/email_verification_page.dart';
 import 'features/home/presentation/pages/welcome_page.dart';
-import 'features/settings/presentation/pages/profile_page.dart';
+
 import 'features/drafts/presentation/pages/drafts_page.dart';
 import 'features/catalogs/presentation/pages/catalogs_page.dart';
 import 'features/statistics/presentation/pages/statistics_page.dart';
+import 'features/settings/presentation/pages/perfil_general_screen.dart';
+import 'features/settings/presentation/pages/informacion_personal_screen.dart';
+import 'features/settings/presentation/pages/direcciones_guardadas_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -44,7 +47,20 @@ final appRouter = GoRouter(
         return EmailVerificationPage(email: email);
       },
     ),
-    GoRoute(path: '/profile', builder: (context, state) => const ProfilePage()),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const PerfilGeneralScreen(),
+      routes: [
+        GoRoute(
+          path: 'informacion-personal',
+          builder: (context, state) => const InformacionPersonalScreen(),
+        ),
+        GoRoute(
+          path: 'direcciones-guardadas',
+          builder: (context, state) => const DireccionesGuardadasScreen(),
+        ),
+      ],
+    ),
     GoRoute(
       path: '/shipping-orders',
       builder: (context, state) => const ShippingOrdersPage(),

@@ -57,30 +57,21 @@ class RegisterNotifier extends StateNotifier<RegisterState> {
           error: 'Error al crear la cuenta. Por favor intenta de nuevo.',
         );
       }
-    } catch (e) {
-      String errorMessage = 'Error al crear la cuenta';
-      final errorString = e.toString();
+    } catch (e, s) {
+      // ignore: avoid_print
+      print('Error de registro: $e');
+      // ignore: avoid_print
+      print('Stacktrace: $s');
 
-      // Debug: imprimir el error completo
-      // print('Error de registro: $errorString');
-
-      if (errorString.contains('User already registered') ||
-          errorString.contains('already_registered') ||
-          errorString.contains('already exists')) {
-        errorMessage = 'Este correo electrónico ya está registrado';
-      } else if (errorString.contains('Password') ||
-          errorString.contains('password')) {
-        errorMessage = 'La contraseña no cumple con los requisitos';
-      } else if (errorString.contains('Email') ||
-          errorString.contains('email')) {
-        errorMessage = 'El correo electrónico no es válido';
-      } else if (errorString.contains('network') ||
-          errorString.contains('Network') ||
-          errorString.contains('connection')) {
-        errorMessage = 'Error de conexión. Verifica tu internet';
+      String errorMessage;
+      if (e.toString().contains('User already registered')) {
+        errorMessage = 'Este correo electrónico ya está en uso.';
+      } else if (e.toString().contains('weak_password')) {
+        errorMessage = 'La contraseña es demasiado débil. Intenta con una más segura.';
+      } else if (e.toString().contains('network') || e.toString().contains('Failed host lookup')) {
+        errorMessage = 'Error de red. Por favor, comprueba tu conexión a internet.';
       } else {
-        // Mostrar el error real para debugging
-        errorMessage = 'Error: ${errorString.split(':').last.trim()}';
+        errorMessage = 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.';
       }
 
       state = state.copyWith(isLoading: false, error: errorMessage);
