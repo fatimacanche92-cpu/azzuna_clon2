@@ -53,15 +53,27 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
 
   void _onSave() {
     if (_formKey.currentState!.validate()) {
-      final remitente = _remitenteController.text.isEmpty ? 'Anónimo' : _remitenteController.text;
+      final remitente = _remitenteController.text.isEmpty
+          ? 'Anónimo'
+          : _remitenteController.text;
       final newEntrega = Entrega(
         deliveryType: _deliveryType,
         paymentStatus: _paymentStatus,
-        pickupName: _deliveryType == DeliveryType.pasaPorEl ? _pickupNameController.text : null,
-        pickupPhone: _deliveryType == DeliveryType.pasaPorEl ? _pickupPhoneController.text : null,
-        deliveryAddress: _deliveryType == DeliveryType.porEntrega ? _deliveryAddressController.text : null,
-        recipientName: _deliveryType == DeliveryType.porEntrega ? _recipientNameController.text : null,
-        note: _deliveryType == DeliveryType.porEntrega ? _noteController.text : null,
+        pickupName: _deliveryType == DeliveryType.pasaPorEl
+            ? _pickupNameController.text
+            : null,
+        pickupPhone: _deliveryType == DeliveryType.pasaPorEl
+            ? _pickupPhoneController.text
+            : null,
+        deliveryAddress: _deliveryType == DeliveryType.porEntrega
+            ? _deliveryAddressController.text
+            : null,
+        recipientName: _deliveryType == DeliveryType.porEntrega
+            ? _recipientNameController.text
+            : null,
+        note: _deliveryType == DeliveryType.porEntrega
+            ? _noteController.text
+            : null,
         remitente: _deliveryType == DeliveryType.porEntrega ? remitente : null,
       );
       ref.read(encargoServiceProvider.notifier).updateEntrega(newEntrega);
@@ -72,9 +84,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Paso 2: Entrega'),
-      ),
+      appBar: AppBar(title: const Text('Paso 2: Entrega')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -82,8 +92,14 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
           children: [
             SegmentedButton<DeliveryType>(
               segments: const [
-                ButtonSegment(value: DeliveryType.pasaPorEl, label: Text('Pasa por él')),
-                ButtonSegment(value: DeliveryType.porEntrega, label: Text('Por entrega')),
+                ButtonSegment(
+                  value: DeliveryType.pasaPorEl,
+                  label: Text('Pasa por él'),
+                ),
+                ButtonSegment(
+                  value: DeliveryType.porEntrega,
+                  label: Text('Por entrega'),
+                ),
               ],
               selected: {_deliveryType},
               onSelectionChanged: (newSelection) {
@@ -91,7 +107,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
               },
             ),
             const SizedBox(height: 24),
-            
+
             if (_deliveryType == DeliveryType.pasaPorEl)
               _buildPickupForm()
             else
@@ -100,7 +116,9 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: _onSave,
-              style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
               child: const Text('Guardar'),
             ),
           ],
@@ -115,19 +133,26 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
       children: [
         TextFormField(
           controller: _pickupNameController,
-          decoration: const InputDecoration(labelText: 'Nombre de quien recoge', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+            labelText: 'Nombre de quien recoge',
+            border: OutlineInputBorder(),
+          ),
           validator: (v) => v!.isEmpty ? 'El nombre es obligatorio' : null,
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _pickupPhoneController,
-          decoration: const InputDecoration(labelText: 'Teléfono', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+            labelText: 'Teléfono',
+            border: OutlineInputBorder(),
+          ),
           keyboardType: TextInputType.phone,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(10),
           ],
-          validator: (v) => v!.length != 10 ? 'El teléfono debe tener 10 dígitos' : null,
+          validator: (v) =>
+              v!.length != 10 ? 'El teléfono debe tener 10 dígitos' : null,
         ),
         const SizedBox(height: 16),
         _buildPaymentStatusDropdown(),
@@ -141,19 +166,28 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
       children: [
         TextFormField(
           controller: _deliveryAddressController,
-          decoration: const InputDecoration(labelText: 'Dirección de entrega', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+            labelText: 'Dirección de entrega',
+            border: OutlineInputBorder(),
+          ),
           validator: (v) => v!.isEmpty ? 'La dirección es obligatoria' : null,
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _recipientNameController,
-          decoration: const InputDecoration(labelText: 'Nombre del destinatario', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+            labelText: 'Nombre del destinatario',
+            border: OutlineInputBorder(),
+          ),
           validator: (v) => v!.isEmpty ? 'El nombre es obligatorio' : null,
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _remitenteController,
-          decoration: const InputDecoration(labelText: 'Remitente (Opcional)', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+            labelText: 'Remitente (Opcional)',
+            border: OutlineInputBorder(),
+          ),
         ),
         const SizedBox(height: 16),
         _buildPaymentStatusDropdown(),
@@ -162,7 +196,10 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
         const SizedBox(height: 8),
         TextFormField(
           controller: _noteController,
-          decoration: const InputDecoration(labelText: 'Escribir nota...', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+            labelText: 'Escribir nota...',
+            border: OutlineInputBorder(),
+          ),
           maxLines: 3,
         ),
       ],
@@ -172,7 +209,10 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
   Widget _buildPaymentStatusDropdown() {
     return DropdownButtonFormField<PaymentStatus>(
       value: _paymentStatus,
-      decoration: const InputDecoration(labelText: 'Estado de pago', border: OutlineInputBorder()),
+      decoration: const InputDecoration(
+        labelText: 'Estado de pago',
+        border: OutlineInputBorder(),
+      ),
       items: const [
         DropdownMenuItem(value: PaymentStatus.pagado, child: Text('Pagado')),
       ],

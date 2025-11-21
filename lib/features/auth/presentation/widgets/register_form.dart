@@ -36,11 +36,9 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
-      await ref.read(registerProvider.notifier).register(
-            name: name,
-            email: email,
-            password: password,
-          );
+      await ref
+          .read(registerProvider.notifier)
+          .register(name: name, email: email, password: password);
     }
   }
 
@@ -130,10 +128,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
             decoration: InputDecoration(
               labelText: 'Contraseña',
               hintText: 'Mínimo 6 caracteres',
-              prefixIcon: Icon(
-                Icons.lock_outlined,
-                color: theme.hintColor,
-              ),
+              prefixIcon: Icon(Icons.lock_outlined, color: theme.hintColor),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscurePassword
@@ -169,10 +164,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
             decoration: InputDecoration(
               labelText: 'Confirmar contraseña',
               hintText: 'Repite tu contraseña',
-              prefixIcon: Icon(
-                Icons.lock_outlined,
-                color: theme.hintColor,
-              ),
+              prefixIcon: Icon(Icons.lock_outlined, color: theme.hintColor),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscureConfirmPassword
@@ -216,15 +208,14 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
                     width: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        theme.colorScheme.primary,
+                      ),
                     ),
                   )
                 : const Text(
                     'Crear cuenta',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
           ),
           const SizedBox(height: 16),
@@ -236,10 +227,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
             children: [
               Text(
                 '¿Ya tienes una cuenta? ',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: theme.hintColor,
-                ),
+                style: TextStyle(fontSize: 14, color: theme.hintColor),
               ),
               GestureDetector(
                 onTap: () {
@@ -271,10 +259,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
                 ),
                 child: Text(
                   registerState.error!,
-                  style: TextStyle(
-                    color: Colors.red.shade700,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.red.shade700, fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -284,4 +269,3 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
     );
   }
 }
-

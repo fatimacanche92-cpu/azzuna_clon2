@@ -19,14 +19,19 @@ class AlbumService {
           .from('albums')
           .select()
           .eq('user_id', userId)
-          .eq('type', type.name) // .name is used to get the string representation of the enum
+          .eq(
+            'type',
+            type.name,
+          ) // .name is used to get the string representation of the enum
           .order('created_at', ascending: false);
 
       return data.map((json) => Album.fromJson(json)).toList();
     } catch (e) {
       // ignore: avoid_print
       print('Error in getAlbums: $e');
-      throw Exception('Error getting albums. Please check your connection and try again.');
+      throw Exception(
+        'Error getting albums. Please check your connection and try again.',
+      );
     }
   }
 

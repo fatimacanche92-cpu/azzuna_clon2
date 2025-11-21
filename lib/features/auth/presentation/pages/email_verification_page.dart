@@ -7,11 +7,8 @@ import '../../../../shared/services/supabase_service.dart';
 /// Pantalla de verificación de email
 class EmailVerificationPage extends StatefulWidget {
   final String email;
-  
-  const EmailVerificationPage({
-    super.key,
-    required this.email,
-  });
+
+  const EmailVerificationPage({super.key, required this.email});
 
   @override
   State<EmailVerificationPage> createState() => _EmailVerificationPageState();
@@ -40,7 +37,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Correo de verificación enviado. Revisa tu bandeja de entrada.'),
+            content: Text(
+              'Correo de verificación enviado. Revisa tu bandeja de entrada.',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -72,10 +71,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.roseQuartz.withOpacity(0.5),
-              AppColors.blush,
-            ],
+            colors: [AppColors.roseQuartz.withOpacity(0.5), AppColors.blush],
           ),
         ),
         child: SafeArea(
@@ -175,13 +171,29 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                                 ],
                               ),
                               const SizedBox(height: 12),
-                              _buildStep(context, '1. Revisa tu bandeja de entrada', Icons.inbox_outlined),
+                              _buildStep(
+                                context,
+                                '1. Revisa tu bandeja de entrada',
+                                Icons.inbox_outlined,
+                              ),
                               const SizedBox(height: 8),
-                              _buildStep(context, '2. Busca el correo de Azzuna', Icons.search_outlined),
+                              _buildStep(
+                                context,
+                                '2. Busca el correo de Azzuna',
+                                Icons.search_outlined,
+                              ),
                               const SizedBox(height: 8),
-                              _buildStep(context, '3. Haz clic en el enlace de verificación', Icons.link_outlined),
+                              _buildStep(
+                                context,
+                                '3. Haz clic en el enlace de verificación',
+                                Icons.link_outlined,
+                              ),
                               const SizedBox(height: 8),
-                              _buildStep(context, '4. Vuelve a la app e inicia sesión', Icons.login_outlined),
+                              _buildStep(
+                                context,
+                                '4. Vuelve a la app e inicia sesión',
+                                Icons.login_outlined,
+                              ),
                             ],
                           ),
                         ),
@@ -191,7 +203,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(
-                            onPressed: _isResending ? null : _resendVerificationEmail,
+                            onPressed: _isResending
+                                ? null
+                                : _resendVerificationEmail,
                             style: OutlinedButton.styleFrom(
                               foregroundColor: colors.primary,
                               side: BorderSide(color: colors.primary, width: 2),
@@ -206,7 +220,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        colors.primary,
+                                      ),
                                     ),
                                   )
                                 : const Text(
@@ -281,11 +297,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
     final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: theme.colorScheme.primary,
-        ),
+        Icon(icon, size: 16, color: theme.colorScheme.primary),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -299,4 +311,3 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
     );
   }
 }
-

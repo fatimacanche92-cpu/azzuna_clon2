@@ -28,7 +28,9 @@ class GalleryScreen extends ConsumerWidget {
             FilledButton(
               onPressed: () {
                 if (controller.text.isNotEmpty) {
-                  ref.read(galleryServiceProvider.notifier).createAlbum(controller.text);
+                  ref
+                      .read(galleryServiceProvider.notifier)
+                      .createAlbum(controller.text);
                   Navigator.of(context).pop();
                 }
               },
@@ -45,9 +47,7 @@ class GalleryScreen extends ConsumerWidget {
     final albums = ref.watch(galleryServiceProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Galería'),
-      ),
+      appBar: AppBar(title: const Text('Galería')),
       body: albums.isEmpty
           ? const Center(
               child: Text(
@@ -94,7 +94,10 @@ class _AlbumCard extends StatelessWidget {
             color: Colors.black.withAlpha((255 * 0.5).round()),
             child: Text(
               album.name,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -104,7 +107,11 @@ class _AlbumCard extends StatelessWidget {
                   File(album.photos.first), // Show first photo as thumbnail
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.broken_image, size: 50, color: Colors.grey);
+                    return const Icon(
+                      Icons.broken_image,
+                      size: 50,
+                      color: Colors.grey,
+                    );
                   },
                 ),
         ),

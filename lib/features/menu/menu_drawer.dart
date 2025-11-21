@@ -16,10 +16,7 @@ class MenuDrawer extends StatelessWidget {
             ),
             child: Text(
               'Azzuna',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 24),
             ),
           ),
           ListTile(

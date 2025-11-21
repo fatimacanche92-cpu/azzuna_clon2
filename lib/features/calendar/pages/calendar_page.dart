@@ -53,13 +53,17 @@ class _CalendarPageState extends State<CalendarPage> {
       // Apply initial filter if provided
       if (widget.initialFilter != null && widget.initialFilter!.isNotEmpty) {
         _selectedEvents.value = _selectedEvents.value
-            .where((reminder) => reminder.classification == widget.initialFilter)
+            .where(
+              (reminder) => reminder.classification == widget.initialFilter,
+            )
             .toList();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al cargar recordatorios: ${e.toString()}')),
+          SnackBar(
+            content: Text('Error al cargar recordatorios: ${e.toString()}'),
+          ),
         );
       }
     } finally {
@@ -70,10 +74,14 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   List<Reminder> _getEventsForDay(DateTime day) {
-    List<Reminder> events = _allReminders.where((reminder) => isSameDay(reminder.date, day)).toList();
+    List<Reminder> events = _allReminders
+        .where((reminder) => isSameDay(reminder.date, day))
+        .toList();
     // Apply filter if provided
     if (widget.initialFilter != null && widget.initialFilter!.isNotEmpty) {
-      events = events.where((reminder) => reminder.classification == widget.initialFilter).toList();
+      events = events
+          .where((reminder) => reminder.classification == widget.initialFilter)
+          .toList();
     }
     return events;
   }
@@ -93,7 +101,9 @@ class _CalendarPageState extends State<CalendarPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: _ReminderForm(
           reminder: reminder,
           selectedDate: _selectedDay ?? DateTime.now(),
@@ -110,7 +120,13 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calendario', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: primaryColor)),
+        title: Text(
+          'Calendario',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -132,7 +148,9 @@ class _CalendarPageState extends State<CalendarPage> {
                     valueListenable: _selectedEvents,
                     builder: (context, value, _) {
                       if (value.isEmpty) {
-                        return const Center(child: Text('No hay recordatorios para este día.'));
+                        return const Center(
+                          child: Text('No hay recordatorios para este día.'),
+                        );
                       }
                       return ListView.builder(
                         itemCount: value.length,
@@ -157,14 +175,26 @@ class _CalendarPageState extends State<CalendarPage> {
       onDaySelected: _onDaySelected,
       eventLoader: _getEventsForDay,
       calendarStyle: CalendarStyle(
-        todayDecoration: BoxDecoration(color: primaryColor.withOpacity(0.3), shape: BoxShape.circle),
-        selectedDecoration: const BoxDecoration(color: primaryColor, shape: BoxShape.circle),
-        markerDecoration: BoxDecoration(color: primaryColor.withOpacity(0.7), shape: BoxShape.circle),
+        todayDecoration: BoxDecoration(
+          color: primaryColor.withOpacity(0.3),
+          shape: BoxShape.circle,
+        ),
+        selectedDecoration: const BoxDecoration(
+          color: primaryColor,
+          shape: BoxShape.circle,
+        ),
+        markerDecoration: BoxDecoration(
+          color: primaryColor.withOpacity(0.7),
+          shape: BoxShape.circle,
+        ),
       ),
       headerStyle: HeaderStyle(
         formatButtonVisible: false,
         titleCentered: true,
-        titleTextStyle: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+        titleTextStyle: GoogleFonts.poppins(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -185,13 +215,19 @@ class _CalendarPageState extends State<CalendarPage> {
               _loadReminders();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Recordatorio actualizado.'), backgroundColor: Colors.green),
+                  const SnackBar(
+                    content: Text('Recordatorio actualizado.'),
+                    backgroundColor: Colors.green,
+                  ),
                 );
               }
             } catch (e) {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
+                  SnackBar(
+                    content: Text('Error: ${e.toString()}'),
+                    backgroundColor: Colors.red,
+                  ),
                 );
               }
             }
@@ -202,7 +238,9 @@ class _CalendarPageState extends State<CalendarPage> {
           event.title,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            decoration: event.completed ? TextDecoration.lineThrough : TextDecoration.none,
+            decoration: event.completed
+                ? TextDecoration.lineThrough
+                : TextDecoration.none,
           ),
         ),
         subtitle: Column(
@@ -211,7 +249,11 @@ class _CalendarPageState extends State<CalendarPage> {
             if (event.description != null && event.description!.isNotEmpty)
               Text(
                 event.description!,
-                style: TextStyle(decoration: event.completed ? TextDecoration.lineThrough : TextDecoration.none),
+                style: TextStyle(
+                  decoration: event.completed
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                ),
               ),
             if (event.classification != null)
               Padding(
@@ -237,12 +279,20 @@ class _CalendarPageState extends State<CalendarPage> {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('Confirmar eliminación'),
-                    content: const Text('¿Estás seguro de que quieres eliminar este recordatorio?'),
+                    content: const Text(
+                      '¿Estás seguro de que quieres eliminar este recordatorio?',
+                    ),
                     actions: [
-                      TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancelar')),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Cancelar'),
+                      ),
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                        child: const Text(
+                          'Eliminar',
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
                     ],
                   ),
@@ -253,13 +303,19 @@ class _CalendarPageState extends State<CalendarPage> {
                     _loadReminders();
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Recordatorio eliminado.'), backgroundColor: Colors.green),
+                        const SnackBar(
+                          content: Text('Recordatorio eliminado.'),
+                          backgroundColor: Colors.green,
+                        ),
                       );
                     }
                   } catch (e) {
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
+                        SnackBar(
+                          content: Text('Error: ${e.toString()}'),
+                          backgroundColor: Colors.red,
+                        ),
                       );
                     }
                   }
@@ -270,37 +326,68 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (event.clientName != null && event.clientName!.isNotEmpty)
                   _buildDetailRow('Cliente:', event.clientName!),
-                if (event.clientPhoneNumber != null && event.clientPhoneNumber!.isNotEmpty)
+                if (event.clientPhoneNumber != null &&
+                    event.clientPhoneNumber!.isNotEmpty)
                   _buildDetailRow('Teléfono:', event.clientPhoneNumber!),
-                if (event.clientAddress != null && event.clientAddress!.isNotEmpty)
+                if (event.clientAddress != null &&
+                    event.clientAddress!.isNotEmpty)
                   _buildDetailRow('Dirección:', event.clientAddress!),
                 if (event.paymentStatus != null)
                   _buildDetailRow('Estado de Pago:', event.paymentStatus!),
                 if (event.amountPaid != null)
-                  _buildDetailRow('Anticipo:', '\$${event.amountPaid!.toStringAsFixed(2)}'),
+                  _buildDetailRow(
+                    'Anticipo:',
+                    '\$${event.amountPaid!.toStringAsFixed(2)}',
+                  ),
                 if (event.amountDue != null)
-                  _buildDetailRow('Monto Restante:', '\$${event.amountDue!.toStringAsFixed(2)}'),
-                if (event.orderSpecification != null && event.orderSpecification!.isNotEmpty)
+                  _buildDetailRow(
+                    'Monto Restante:',
+                    '\$${event.amountDue!.toStringAsFixed(2)}',
+                  ),
+                if (event.orderSpecification != null &&
+                    event.orderSpecification!.isNotEmpty)
                   _buildDetailRow('Especificación:', event.orderSpecification!),
                 _buildDetailRow('Lleva Nota:', event.hasNote ? 'Sí' : 'No'),
                 if (event.hasNote)
-                  _buildDetailRow('Nota Anónima:', event.isAnonymous ? 'Sí' : 'No'),
+                  _buildDetailRow(
+                    'Nota Anónima:',
+                    event.isAnonymous ? 'Sí' : 'No',
+                  ),
                 if (event.flowerArrangementSize != null)
-                  _buildDetailRow('Tamaño Arreglo:', event.flowerArrangementSize!),
+                  _buildDetailRow(
+                    'Tamaño Arreglo:',
+                    event.flowerArrangementSize!,
+                  ),
                 if (event.flowerArrangementPrice != null)
-                  _buildDetailRow('Precio Arreglo:', '\$${event.flowerArrangementPrice!.toStringAsFixed(2)}'),
+                  _buildDetailRow(
+                    'Precio Arreglo:',
+                    '\$${event.flowerArrangementPrice!.toStringAsFixed(2)}',
+                  ),
                 if (event.flowerArrangementColor != null)
-                  _buildDetailRow('Color Arreglo:', event.flowerArrangementColor!),
+                  _buildDetailRow(
+                    'Color Arreglo:',
+                    event.flowerArrangementColor!,
+                  ),
                 if (event.flowerTypes != null && event.flowerTypes!.isNotEmpty)
-                  _buildDetailRow('Tipos de Flores:', event.flowerTypes!.join(', ')),
-                if (event.specialFlowerInstructions != null && event.specialFlowerInstructions!.isNotEmpty)
-                  _buildDetailRow('Instrucciones Especiales:', event.specialFlowerInstructions!),
+                  _buildDetailRow(
+                    'Tipos de Flores:',
+                    event.flowerTypes!.join(', '),
+                  ),
+                if (event.specialFlowerInstructions != null &&
+                    event.specialFlowerInstructions!.isNotEmpty)
+                  _buildDetailRow(
+                    'Instrucciones Especiales:',
+                    event.specialFlowerInstructions!,
+                  ),
               ],
             ),
           ),
@@ -317,14 +404,14 @@ class _CalendarPageState extends State<CalendarPage> {
         children: [
           Text(
             label,
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
           ),
           const SizedBox(width: 5),
           Expanded(
-            child: Text(
-              value,
-              style: GoogleFonts.poppins(fontSize: 13),
-            ),
+            child: Text(value, style: GoogleFonts.poppins(fontSize: 13)),
           ),
         ],
       ),
@@ -337,7 +424,11 @@ class _ReminderForm extends StatefulWidget {
   final DateTime selectedDate;
   final VoidCallback onSave;
 
-  const _ReminderForm({this.reminder, required this.selectedDate, required this.onSave});
+  const _ReminderForm({
+    this.reminder,
+    required this.selectedDate,
+    required this.onSave,
+  });
 
   @override
   __ReminderFormState createState() => __ReminderFormState();
@@ -364,14 +455,35 @@ class __ReminderFormState extends State<_ReminderForm> {
   String? _flowerArrangementSize;
   late TextEditingController _flowerArrangementPriceController;
   String? _flowerArrangementColor;
-  late TextEditingController _flowerTypesController; // For simplicity, comma-separated string
+  late TextEditingController
+  _flowerTypesController; // For simplicity, comma-separated string
   late TextEditingController _specialFlowerInstructionsController;
   String? _classification;
 
-  final List<String> _paymentStatusOptions = ['Pagado', 'Anticipo', 'Pendiente'];
-  final List<String> _classificationOptions = ['Pedido', 'Entrega', 'Publicación Pendiente'];
-  final List<String> _flowerSizes = ['Pequeño', 'Mediano', 'Grande', 'Extra Grande'];
-  final List<String> _flowerColors = ['Rojo', 'Blanco', 'Rosa', 'Amarillo', 'Azul', 'Mixto'];
+  final List<String> _paymentStatusOptions = [
+    'Pagado',
+    'Anticipo',
+    'Pendiente',
+  ];
+  final List<String> _classificationOptions = [
+    'Pedido',
+    'Entrega',
+    'Publicación Pendiente',
+  ];
+  final List<String> _flowerSizes = [
+    'Pequeño',
+    'Mediano',
+    'Grande',
+    'Extra Grande',
+  ];
+  final List<String> _flowerColors = [
+    'Rojo',
+    'Blanco',
+    'Rosa',
+    'Amarillo',
+    'Azul',
+    'Mixto',
+  ];
 
   @override
   void initState() {
@@ -380,20 +492,38 @@ class __ReminderFormState extends State<_ReminderForm> {
     _description = widget.reminder?.description ?? '';
     _date = widget.reminder?.date ?? widget.selectedDate;
 
-    _clientNameController = TextEditingController(text: widget.reminder?.clientName ?? '');
-    _clientPhoneNumberController = TextEditingController(text: widget.reminder?.clientPhoneNumber ?? '');
-    _clientAddressController = TextEditingController(text: widget.reminder?.clientAddress ?? '');
+    _clientNameController = TextEditingController(
+      text: widget.reminder?.clientName ?? '',
+    );
+    _clientPhoneNumberController = TextEditingController(
+      text: widget.reminder?.clientPhoneNumber ?? '',
+    );
+    _clientAddressController = TextEditingController(
+      text: widget.reminder?.clientAddress ?? '',
+    );
     _paymentStatus = widget.reminder?.paymentStatus;
-    _amountPaidController = TextEditingController(text: widget.reminder?.amountPaid?.toString() ?? '');
-    _amountDueController = TextEditingController(text: widget.reminder?.amountDue?.toString() ?? '');
-    _orderSpecificationController = TextEditingController(text: widget.reminder?.orderSpecification ?? '');
+    _amountPaidController = TextEditingController(
+      text: widget.reminder?.amountPaid?.toString() ?? '',
+    );
+    _amountDueController = TextEditingController(
+      text: widget.reminder?.amountDue?.toString() ?? '',
+    );
+    _orderSpecificationController = TextEditingController(
+      text: widget.reminder?.orderSpecification ?? '',
+    );
     _hasNote = widget.reminder?.hasNote ?? false;
     _isAnonymous = widget.reminder?.isAnonymous ?? false;
     _flowerArrangementSize = widget.reminder?.flowerArrangementSize;
-    _flowerArrangementPriceController = TextEditingController(text: widget.reminder?.flowerArrangementPrice?.toString() ?? '');
+    _flowerArrangementPriceController = TextEditingController(
+      text: widget.reminder?.flowerArrangementPrice?.toString() ?? '',
+    );
     _flowerArrangementColor = widget.reminder?.flowerArrangementColor;
-    _flowerTypesController = TextEditingController(text: widget.reminder?.flowerTypes?.join(', ') ?? '');
-    _specialFlowerInstructionsController = TextEditingController(text: widget.reminder?.specialFlowerInstructions ?? '');
+    _flowerTypesController = TextEditingController(
+      text: widget.reminder?.flowerTypes?.join(', ') ?? '',
+    );
+    _specialFlowerInstructionsController = TextEditingController(
+      text: widget.reminder?.specialFlowerInstructions ?? '',
+    );
     _classification = widget.reminder?.classification;
   }
 
@@ -417,27 +547,44 @@ class __ReminderFormState extends State<_ReminderForm> {
       setState(() => _isSaving = true);
 
       try {
-        final flowerTypesList = _flowerTypesController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+        final flowerTypesList = _flowerTypesController.text
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList();
 
         if (widget.reminder == null) {
           await _reminderService.addReminder(
             title: _title,
             description: _description,
             date: _date,
-            clientName: _clientNameController.text.isEmpty ? null : _clientNameController.text,
-            clientPhoneNumber: _clientPhoneNumberController.text.isEmpty ? null : _clientPhoneNumberController.text,
-            clientAddress: _clientAddressController.text.isEmpty ? null : _clientAddressController.text,
+            clientName: _clientNameController.text.isEmpty
+                ? null
+                : _clientNameController.text,
+            clientPhoneNumber: _clientPhoneNumberController.text.isEmpty
+                ? null
+                : _clientPhoneNumberController.text,
+            clientAddress: _clientAddressController.text.isEmpty
+                ? null
+                : _clientAddressController.text,
             paymentStatus: _paymentStatus,
             amountPaid: double.tryParse(_amountPaidController.text),
             amountDue: double.tryParse(_amountDueController.text),
-            orderSpecification: _orderSpecificationController.text.isEmpty ? null : _orderSpecificationController.text,
+            orderSpecification: _orderSpecificationController.text.isEmpty
+                ? null
+                : _orderSpecificationController.text,
             hasNote: _hasNote,
             isAnonymous: _isAnonymous,
             flowerArrangementSize: _flowerArrangementSize,
-            flowerArrangementPrice: double.tryParse(_flowerArrangementPriceController.text),
+            flowerArrangementPrice: double.tryParse(
+              _flowerArrangementPriceController.text,
+            ),
             flowerArrangementColor: _flowerArrangementColor,
             flowerTypes: flowerTypesList.isEmpty ? null : flowerTypesList,
-            specialFlowerInstructions: _specialFlowerInstructionsController.text.isEmpty ? null : _specialFlowerInstructionsController.text,
+            specialFlowerInstructions:
+                _specialFlowerInstructionsController.text.isEmpty
+                ? null
+                : _specialFlowerInstructionsController.text,
             classification: _classification,
           );
         } else {
@@ -445,34 +592,53 @@ class __ReminderFormState extends State<_ReminderForm> {
             title: _title,
             description: _description,
             date: _date,
-            clientName: _clientNameController.text.isEmpty ? null : _clientNameController.text,
-            clientPhoneNumber: _clientPhoneNumberController.text.isEmpty ? null : _clientPhoneNumberController.text,
-            clientAddress: _clientAddressController.text.isEmpty ? null : _clientAddressController.text,
+            clientName: _clientNameController.text.isEmpty
+                ? null
+                : _clientNameController.text,
+            clientPhoneNumber: _clientPhoneNumberController.text.isEmpty
+                ? null
+                : _clientPhoneNumberController.text,
+            clientAddress: _clientAddressController.text.isEmpty
+                ? null
+                : _clientAddressController.text,
             paymentStatus: _paymentStatus,
             amountPaid: double.tryParse(_amountPaidController.text),
             amountDue: double.tryParse(_amountDueController.text),
-            orderSpecification: _orderSpecificationController.text.isEmpty ? null : _orderSpecificationController.text,
+            orderSpecification: _orderSpecificationController.text.isEmpty
+                ? null
+                : _orderSpecificationController.text,
             hasNote: _hasNote,
             isAnonymous: _isAnonymous,
             flowerArrangementSize: _flowerArrangementSize,
-            flowerArrangementPrice: double.tryParse(_flowerArrangementPriceController.text),
+            flowerArrangementPrice: double.tryParse(
+              _flowerArrangementPriceController.text,
+            ),
             flowerArrangementColor: _flowerArrangementColor,
             flowerTypes: flowerTypesList.isEmpty ? null : flowerTypesList,
-            specialFlowerInstructions: _specialFlowerInstructionsController.text.isEmpty ? null : _specialFlowerInstructionsController.text,
+            specialFlowerInstructions:
+                _specialFlowerInstructionsController.text.isEmpty
+                ? null
+                : _specialFlowerInstructionsController.text,
             classification: _classification,
           );
           await _reminderService.updateReminder(updatedReminder);
         }
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Recordatorio guardado.'), backgroundColor: Colors.green),
+            const SnackBar(
+              content: Text('Recordatorio guardado.'),
+              backgroundColor: Colors.green,
+            ),
           );
         }
         widget.onSave();
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error al guardar: ${e.toString()}'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text('Error al guardar: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       } finally {
@@ -494,26 +660,36 @@ class __ReminderFormState extends State<_ReminderForm> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                widget.reminder == null ? 'Añadir Recordatorio' : 'Editar Recordatorio',
-                style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                widget.reminder == null
+                    ? 'Añadir Recordatorio'
+                    : 'Editar Recordatorio',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 20),
               TextFormField(
                 initialValue: _title,
                 decoration: const InputDecoration(labelText: 'Título'),
-                validator: (value) => value!.isEmpty ? 'El título no puede estar vacío' : null,
+                validator: (value) =>
+                    value!.isEmpty ? 'El título no puede estar vacío' : null,
                 onSaved: (value) => _title = value!,
               ),
               const SizedBox(height: 10),
               TextFormField(
                 initialValue: _description,
-                decoration: const InputDecoration(labelText: 'Descripción (Opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Descripción (Opcional)',
+                ),
                 onSaved: (value) => _description = value ?? '',
               ),
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Expanded(child: Text('Fecha: ${DateFormat.yMMMd().format(_date)}')),
+                  Expanded(
+                    child: Text('Fecha: ${DateFormat.yMMMd().format(_date)}'),
+                  ),
                   TextButton(
                     onPressed: () async {
                       final pickedDate = await showDatePicker(
@@ -540,7 +716,10 @@ class __ReminderFormState extends State<_ReminderForm> {
                         }
                       }
                     },
-                    child: const Text('Cambiar', style: TextStyle(color: _CalendarPageState.primaryColor)),
+                    child: const Text(
+                      'Cambiar',
+                      style: TextStyle(color: _CalendarPageState.primaryColor),
+                    ),
                   ),
                 ],
               ),
@@ -549,12 +728,16 @@ class __ReminderFormState extends State<_ReminderForm> {
               _buildSectionTitle('Información del Cliente'),
               TextFormField(
                 controller: _clientNameController,
-                decoration: const InputDecoration(labelText: 'Nombre del Cliente'),
+                decoration: const InputDecoration(
+                  labelText: 'Nombre del Cliente',
+                ),
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: _clientPhoneNumberController,
-                decoration: const InputDecoration(labelText: 'Número de Teléfono'),
+                decoration: const InputDecoration(
+                  labelText: 'Número de Teléfono',
+                ),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 10),
@@ -584,13 +767,17 @@ class __ReminderFormState extends State<_ReminderForm> {
               const SizedBox(height: 10),
               TextFormField(
                 controller: _amountPaidController,
-                decoration: const InputDecoration(labelText: 'Monto Pagado (Anticipo)'),
+                decoration: const InputDecoration(
+                  labelText: 'Monto Pagado (Anticipo)',
+                ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: _amountDueController,
-                decoration: const InputDecoration(labelText: 'Monto Restante por Pagar'),
+                decoration: const InputDecoration(
+                  labelText: 'Monto Restante por Pagar',
+                ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 20),
@@ -599,7 +786,9 @@ class __ReminderFormState extends State<_ReminderForm> {
               _buildSectionTitle('Especificación del Pedido'),
               TextFormField(
                 controller: _orderSpecificationController,
-                decoration: const InputDecoration(labelText: 'Detalles del Pedido'),
+                decoration: const InputDecoration(
+                  labelText: 'Detalles del Pedido',
+                ),
                 maxLines: 3,
               ),
               Row(
@@ -630,7 +819,9 @@ class __ReminderFormState extends State<_ReminderForm> {
               _buildSectionTitle('Detalles del Arreglo Floral'),
               DropdownButtonFormField<String>(
                 value: _flowerArrangementSize,
-                decoration: const InputDecoration(labelText: 'Tamaño del Arreglo'),
+                decoration: const InputDecoration(
+                  labelText: 'Tamaño del Arreglo',
+                ),
                 items: _flowerSizes.map((String size) {
                   return DropdownMenuItem<String>(
                     value: size,
@@ -646,7 +837,9 @@ class __ReminderFormState extends State<_ReminderForm> {
               const SizedBox(height: 10),
               TextFormField(
                 controller: _flowerArrangementPriceController,
-                decoration: const InputDecoration(labelText: 'Precio del Arreglo'),
+                decoration: const InputDecoration(
+                  labelText: 'Precio del Arreglo',
+                ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 10),
@@ -668,12 +861,16 @@ class __ReminderFormState extends State<_ReminderForm> {
               const SizedBox(height: 10),
               TextFormField(
                 controller: _flowerTypesController,
-                decoration: const InputDecoration(labelText: 'Tipos de Flores (separar por comas)'),
+                decoration: const InputDecoration(
+                  labelText: 'Tipos de Flores (separar por comas)',
+                ),
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: _specialFlowerInstructionsController,
-                decoration: const InputDecoration(labelText: 'Instrucciones de Flores Especiales'),
+                decoration: const InputDecoration(
+                  labelText: 'Instrucciones de Flores Especiales',
+                ),
                 maxLines: 2,
               ),
               const SizedBox(height: 20),
@@ -701,12 +898,19 @@ class __ReminderFormState extends State<_ReminderForm> {
                 onPressed: _isSaving ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _CalendarPageState.primaryColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
                 child: _isSaving
-                    ? const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white))
-                    : const Text('Guardar', style: TextStyle(color: Colors.white)),
-              )
+                    ? const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      )
+                    : const Text(
+                        'Guardar',
+                        style: TextStyle(color: Colors.white),
+                      ),
+              ),
             ],
           ),
         ),
@@ -727,4 +931,3 @@ class __ReminderFormState extends State<_ReminderForm> {
     );
   }
 }
-

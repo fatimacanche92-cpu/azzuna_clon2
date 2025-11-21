@@ -17,7 +17,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('assets/icon.png', height: 40), // Using your app icon as logo
+        title: Image.asset(
+          'assets/icon.png',
+          height: 40,
+        ), // Using your app icon as logo
         centerTitle: true,
         elevation: 0,
         backgroundColor: theme.scaffoldBackgroundColor,
@@ -117,7 +120,9 @@ class _SummaryCard extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey.shade700),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: Colors.grey.shade700,
+                ),
               ),
               const SizedBox(height: 12),
               Row(
@@ -127,7 +132,9 @@ class _SummaryCard extends StatelessWidget {
                     count,
                     style: theme.textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white,
+                      color: color.computeLuminance() > 0.5
+                          ? Colors.black
+                          : Colors.white,
                     ),
                   ),
                   Icon(icon, size: 40, color: color),
@@ -136,7 +143,9 @@ class _SummaryCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 'Ver todos →',
-                style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: Colors.grey.shade600,
+                ),
               ),
             ],
           ),

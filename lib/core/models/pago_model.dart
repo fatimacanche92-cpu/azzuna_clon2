@@ -4,17 +4,11 @@ enum PaymentMethod { mastercard, visa, paypal }
 
 @immutable
 class Pago {
-  const Pago({
-    this.paymentMethod,
-  });
+  const Pago({this.paymentMethod});
 
   final PaymentMethod? paymentMethod;
 
-  Pago copyWith({
-    PaymentMethod? paymentMethod,
-  }) {
-    return Pago(
-      paymentMethod: paymentMethod ?? this.paymentMethod,
-    );
+  Pago copyWith({PaymentMethod? paymentMethod}) {
+    return Pago(paymentMethod: paymentMethod ?? this.paymentMethod);
   }
 }

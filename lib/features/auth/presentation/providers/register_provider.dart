@@ -13,11 +13,7 @@ class RegisterState {
     this.isSuccess = false,
   });
 
-  RegisterState copyWith({
-    bool? isLoading,
-    String? error,
-    bool? isSuccess,
-  }) {
+  RegisterState copyWith({bool? isLoading, String? error, bool? isSuccess}) {
     return RegisterState(
       isLoading: isLoading ?? this.isLoading,
       error: error,
@@ -49,13 +45,11 @@ class RegisterNotifier extends StateNotifier<RegisterState> {
       if (response.user != null) {
         // Si no hay sesión, significa que el email necesita confirmación
         final needsEmailConfirmation = response.session == null;
-        
+
         state = state.copyWith(
           isLoading: false,
           isSuccess: true,
-          error: needsEmailConfirmation
-              ? 'email_verification_required'
-              : null,
+          error: needsEmailConfirmation ? 'email_verification_required' : null,
         );
       } else {
         state = state.copyWith(
@@ -66,33 +60,30 @@ class RegisterNotifier extends StateNotifier<RegisterState> {
     } catch (e) {
       String errorMessage = 'Error al crear la cuenta';
       final errorString = e.toString();
-      
+
       // Debug: imprimir el error completo
       // print('Error de registro: $errorString');
-      
-      if (errorString.contains('User already registered') || 
+
+      if (errorString.contains('User already registered') ||
           errorString.contains('already_registered') ||
           errorString.contains('already exists')) {
         errorMessage = 'Este correo electrónico ya está registrado';
-      } else if (errorString.contains('Password') || 
-                 errorString.contains('password')) {
+      } else if (errorString.contains('Password') ||
+          errorString.contains('password')) {
         errorMessage = 'La contraseña no cumple con los requisitos';
-      } else if (errorString.contains('Email') || 
-                 errorString.contains('email')) {
+      } else if (errorString.contains('Email') ||
+          errorString.contains('email')) {
         errorMessage = 'El correo electrónico no es válido';
-      } else if (errorString.contains('network') || 
-                 errorString.contains('Network') ||
-                 errorString.contains('connection')) {
+      } else if (errorString.contains('network') ||
+          errorString.contains('Network') ||
+          errorString.contains('connection')) {
         errorMessage = 'Error de conexión. Verifica tu internet';
       } else {
         // Mostrar el error real para debugging
         errorMessage = 'Error: ${errorString.split(':').last.trim()}';
       }
 
-      state = state.copyWith(
-        isLoading: false,
-        error: errorMessage,
-      );
+      state = state.copyWith(isLoading: false, error: errorMessage);
     }
   }
 

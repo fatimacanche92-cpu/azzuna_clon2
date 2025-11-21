@@ -17,10 +17,13 @@ class ProfileService {
   Future<Profile> getProfile() async {
     try {
       final userId = _getUserId();
-      final data =
-          await _supabase.from('profiles').select(
-            'id, full_name, shop_name, email, phone, address, schedule, shop_description, social_links, avatar_url'
-          ).eq('id', userId).single();
+      final data = await _supabase
+          .from('user_profiles')
+          .select(
+            'id, full_name, shop_name, email, phone, address, schedule, shop_description, social_links, avatar_url',
+          )
+          .eq('id', userId)
+          .single();
       return Profile.fromJson(data);
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST116') {
@@ -41,8 +44,8 @@ class ProfileService {
       'email': user.email,
       'full_name': user.userMetadata?['name'] ?? user.email,
     };
-    await _supabase.from('profiles').insert(profileData);
-    
+    await _supabase.from('user_profiles').insert(profileData);
+
     return Profile(
       id: user.id,
       email: user.email,
@@ -65,7 +68,7 @@ class ProfileService {
         ..remove('email');
 
       print('Updating profile with: $updates');
-      await _supabase.from('profiles').update(updates).eq('id', userId);
+      await _supabase.from('user_profiles').update(updates).eq('id', userId);
     } catch (e) {
       print('Error in updateProfile: $e');
       throw Exception('Error updating profile.');
@@ -78,15 +81,22 @@ class ProfileService {
       final fileName = basename(image.path);
       final filePath = '$userId/$fileName';
 
-      await _supabase.storage.from('avatars').upload(
+      await _supabase.storage
+          .from('avatars')
+          .upload(
             filePath,
             image,
             fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
           );
 
-      final publicUrl = _supabase.storage.from('avatars').getPublicUrl(filePath);
-      
-      await _supabase.from('profiles').update({'avatar_url': publicUrl}).eq('id', userId);
+      final publicUrl = _supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+      await _supabase
+          .from('user_profiles')
+          .update({'avatar_url': publicUrl})
+          .eq('id', userId);
 
       return publicUrl;
     } catch (e) {

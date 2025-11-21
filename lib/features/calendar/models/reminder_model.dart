@@ -25,7 +25,8 @@ class Reminder with _$Reminder {
     String? flowerArrangementColor,
     List<String>? flowerTypes,
     String? specialFlowerInstructions,
-    String? classification, // e.g., "Pedido", "Entrega", "Publicación Pendiente"
+    String?
+    classification, // e.g., "Pedido", "Entrega", "Publicación Pendiente"
     @Default(false) bool completed,
   }) = _Reminder;
 

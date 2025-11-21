@@ -32,11 +32,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
-      await ref.read(loginProvider.notifier).login(
-            email: email,
-            password: password,
-            rememberMe: _rememberMe,
-          );
+      await ref
+          .read(loginProvider.notifier)
+          .login(email: email, password: password, rememberMe: _rememberMe);
     }
   }
 
@@ -98,10 +96,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             decoration: InputDecoration(
               labelText: 'Contraseña',
               hintText: '••••••••',
-              prefixIcon: Icon(
-                Icons.lock_outlined,
-                color: theme.hintColor,
-              ),
+              prefixIcon: Icon(Icons.lock_outlined, color: theme.hintColor),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscurePassword
@@ -145,10 +140,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                'Recordarme',
-                style: theme.textTheme.bodyMedium,
-              ),
+              Text('Recordarme', style: theme.textTheme.bodyMedium),
             ],
           ),
           const SizedBox(height: 24),
@@ -167,10 +159,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                   )
                 : const Text(
                     'Iniciar sesión',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
           ),
           const SizedBox(height: 16),
@@ -197,10 +186,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
             children: [
               Text(
                 '¿No tienes una cuenta? ',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: theme.hintColor,
-                ),
+                style: TextStyle(fontSize: 14, color: theme.hintColor),
               ),
               GestureDetector(
                 onTap: () {
@@ -221,7 +207,8 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           ),
 
           // Mostrar errores
-          if (loginState.error != null && loginState.error != 'email_not_verified')
+          if (loginState.error != null &&
+              loginState.error != 'email_not_verified')
             Padding(
               padding: const EdgeInsets.only(top: 16),
               child: Container(
@@ -233,10 +220,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
                 ),
                 child: Text(
                   loginState.error!,
-                  style: TextStyle(
-                    color: Colors.red.shade700,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.red.shade700, fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
               ),

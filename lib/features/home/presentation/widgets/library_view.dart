@@ -23,10 +23,7 @@ class LibraryView extends StatelessWidget {
           const SizedBox(height: 4),
           const Text(
             'Organizado por fecha de captura',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.textLight,
-            ),
+            style: TextStyle(fontSize: 16, color: AppColors.textLight),
           ),
           const SizedBox(height: 24),
 
@@ -78,9 +75,7 @@ class LibraryView extends StatelessWidget {
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
-            return _buildLibraryItem(
-              title: item['title']!,
-            );
+            return _buildLibraryItem(title: item['title']!);
           },
         ),
       ],
@@ -139,4 +134,3 @@ class LibraryView extends StatelessWidget {
     );
   }
 }
-

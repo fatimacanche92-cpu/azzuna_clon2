@@ -21,10 +21,7 @@ class SettingsView extends ConsumerWidget {
         children: [
           const Text(
             'Ajustes',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
 
@@ -156,10 +153,7 @@ class SettingsView extends ConsumerWidget {
               ),
               child: const Text(
                 'Cerrar sesión',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -178,10 +172,7 @@ class SettingsView extends ConsumerWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         Container(
@@ -197,7 +188,9 @@ class SettingsView extends ConsumerWidget {
             ],
           ),
           child: Column(
-            children: items.map((item) => _buildSettingsItem(context, item)).toList(),
+            children: items
+                .map((item) => _buildSettingsItem(context, item))
+                .toList(),
           ),
         ),
       ],
@@ -206,14 +199,10 @@ class SettingsView extends ConsumerWidget {
 
   Widget _buildSettingsItem(BuildContext context, _SettingsItem item) {
     return ListTile(
-      leading: Icon(
-        item.icon,
-        color: AppColors.accentPurple,
-      ),
-      title: Text(
-        item.title,
-      ),
-      trailing: item.trailing ??
+      leading: Icon(item.icon, color: AppColors.accentPurple),
+      title: Text(item.title),
+      trailing:
+          item.trailing ??
           Icon(
             Icons.chevron_right,
             color: Theme.of(context).textTheme.bodySmall?.color,
@@ -236,4 +225,3 @@ class _SettingsItem {
     this.onTap,
   });
 }
-

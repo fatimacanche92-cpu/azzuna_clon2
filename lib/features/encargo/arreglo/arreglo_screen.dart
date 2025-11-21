@@ -25,7 +25,8 @@ class _ArregloScreenState extends ConsumerState<ArregloScreen> {
     'Lirios': ['Blanco', 'Naranja', 'Rosa', 'Amarillo', 'Rojo'],
   };
 
-  List<String> get _availableColors => _flowerColorMap[_selectedFlowerType] ?? [];
+  List<String> get _availableColors =>
+      _flowerColorMap[_selectedFlowerType] ?? [];
 
   @override
   void initState() {
@@ -35,8 +36,11 @@ class _ArregloScreenState extends ConsumerState<ArregloScreen> {
       _size = existingArreglo.size;
       _selectedFlowerType = existingArreglo.flowerType;
       // Only add colors that are valid for the selected flower type
-      if (_selectedFlowerType != null && _flowerColorMap.containsKey(_selectedFlowerType)) {
-        _colors.addAll(existingArreglo.colors.where((c) => _availableColors.contains(c)));
+      if (_selectedFlowerType != null &&
+          _flowerColorMap.containsKey(_selectedFlowerType)) {
+        _colors.addAll(
+          existingArreglo.colors.where((c) => _availableColors.contains(c)),
+        );
       }
     }
   }
@@ -61,9 +65,7 @@ class _ArregloScreenState extends ConsumerState<ArregloScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Paso 1: Arreglo'),
-      ),
+      appBar: AppBar(title: const Text('Paso 1: Arreglo')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -105,7 +107,8 @@ class _ArregloScreenState extends ConsumerState<ArregloScreen> {
                   _colors.clear();
                 });
               },
-              validator: (value) => value == null ? 'Selecciona un tipo de flor' : null,
+              validator: (value) =>
+                  value == null ? 'Selecciona un tipo de flor' : null,
             ),
             const SizedBox(height: 24),
 
@@ -132,7 +135,7 @@ class _ArregloScreenState extends ConsumerState<ArregloScreen> {
               ),
               const SizedBox(height: 24),
             ],
-            
+
             const SizedBox(height: 32),
 
             ElevatedButton(

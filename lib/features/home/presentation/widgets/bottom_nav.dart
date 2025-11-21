@@ -109,10 +109,7 @@ class BottomNav extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppColors.purpleLight,
-            AppColors.accentPurple,
-          ],
+          colors: [AppColors.purpleLight, AppColors.accentPurple],
         ),
         boxShadow: [
           BoxShadow(
@@ -132,14 +129,9 @@ class BottomNav extends StatelessWidget {
             );
           },
           borderRadius: BorderRadius.circular(28),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-            size: 28,
-          ),
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
         ),
       ),
     );
   }
 }
-

@@ -52,12 +52,15 @@ class OrderDetailsPage extends StatelessWidget {
             if (order.clientPhone != null)
               _buildDetailRow('Teléfono:', order.clientPhone!),
             _buildDetailRow(
-                'Entrega:',
-                order.deliveryType == OrderDeliveryType.envio
-                    ? 'Envío'
-                    : 'Por recoger'),
+              'Entrega:',
+              order.deliveryType == OrderDeliveryType.envio
+                  ? 'Envío'
+                  : 'Por recoger',
+            ),
             _buildDetailRow(
-                'Fecha:', DateFormat.yMMMd().format(order.scheduledDate)),
+              'Fecha:',
+              DateFormat.yMMMd().format(order.scheduledDate),
+            ),
             const SizedBox(height: 24),
             _buildSectionTitle('ARREGLO'),
             _buildDetailRow('Tipo:', order.arrangementType),
@@ -70,21 +73,25 @@ class OrderDetailsPage extends StatelessWidget {
             _buildDetailRow('Precio:', '\$${order.price.toStringAsFixed(2)}'),
             const SizedBox(height: 24),
             _buildSectionTitle('PAGO'),
-            _buildDetailRow('Estado:', paymentStatusText,
-                valueColor: paymentStatusColor),
+            _buildDetailRow(
+              'Estado:',
+              paymentStatusText,
+              valueColor: paymentStatusColor,
+            ),
             if (order.paymentStatus == OrderPaymentStatus.conAnticipo) ...[
               _buildDetailRow(
-                  'Anticipo:', '\$${order.downPayment!.toStringAsFixed(2)}'),
+                'Anticipo:',
+                '\$${order.downPayment!.toStringAsFixed(2)}',
+              ),
               _buildDetailRow(
-                  'Restante:', '\$${order.remainingAmount!.toStringAsFixed(2)}'),
+                'Restante:',
+                '\$${order.remainingAmount!.toStringAsFixed(2)}',
+              ),
             ],
             const SizedBox(height: 24),
             if (order.publicNote != null && order.publicNote!.isNotEmpty) ...[
               _buildSectionTitle('NOTA'),
-              Text(
-                order.publicNote!,
-                style: GoogleFonts.poppins(fontSize: 14),
-              ),
+              Text(order.publicNote!, style: GoogleFonts.poppins(fontSize: 14)),
               const SizedBox(height: 24),
             ],
             if (order.deliveryType != OrderDeliveryType.envio)
@@ -97,7 +104,9 @@ class OrderDetailsPage extends StatelessWidget {
                     backgroundColor: Colors.purple,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15),
+                      horizontal: 40,
+                      vertical: 15,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

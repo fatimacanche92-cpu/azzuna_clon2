@@ -6,12 +6,8 @@ class LanguagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Idioma'),
-      ),
-      body: const Center(
-        child: Text('Página de Idioma'),
-      ),
+      appBar: AppBar(title: const Text('Idioma')),
+      body: const Center(child: Text('Página de Idioma')),
     );
   }
 }

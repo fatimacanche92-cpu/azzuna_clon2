@@ -10,8 +10,10 @@ class DraftAlbum with _$DraftAlbum {
     @JsonKey(name: 'user_id') required String userId,
     required String title,
     String? description,
-    @Default([]) List<String> photoUrls, // List of URLs or local paths to photos
-    @Default('Incompleto') String classification, // e.g., "Completo", "En Revisión", "Incompleto"
+    @Default([])
+    List<String> photoUrls, // List of URLs or local paths to photos
+    @Default('Incompleto')
+    String classification, // e.g., "Completo", "En Revisión", "Incompleto"
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
   }) = _DraftAlbum;

@@ -4,11 +4,7 @@ enum ArregloSize { p, m, g, eg }
 
 @immutable
 class Arreglo {
-  const Arreglo({
-    this.size,
-    this.colors = const [],
-    this.flowerType,
-  });
+  const Arreglo({this.size, this.colors = const [], this.flowerType});
 
   final ArregloSize? size;
   final List<String> colors;

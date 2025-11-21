@@ -68,7 +68,10 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al cargar el perfil: ${e.toString()}'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al cargar el perfil: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
       rethrow;
@@ -86,7 +89,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
     _socialMediaControllers.clear();
     _socialMediaControllers.addAll(
-      (profile.socialMediaLinks).map((link) => TextEditingController(text: link))
+      (profile.socialMediaLinks).map(
+        (link) => TextEditingController(text: link),
+      ),
     );
   }
 
@@ -113,7 +118,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perfil actualizado con éxito.'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Perfil actualizado con éxito.'),
+            backgroundColor: Colors.green,
+          ),
         );
       }
       setState(() {
@@ -123,7 +131,10 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al guardar el perfil: ${e.toString()}'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al guardar el perfil: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -149,13 +160,19 @@ class _ProfilePageState extends State<ProfilePage> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Imagen de perfil actualizada.'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text('Imagen de perfil actualizada.'),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al subir la imagen: ${e.toString()}'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al subir la imagen: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -166,13 +183,23 @@ class _ProfilePageState extends State<ProfilePage> {
       await _profileService.resetPassword(_emailController.text);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Se ha enviado un correo para restablecer la contraseña.'), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text(
+              'Se ha enviado un correo para restablecer la contraseña.',
+            ),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al solicitar cambio de contraseña: ${e.toString()}'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(
+              'Error al solicitar cambio de contraseña: ${e.toString()}',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -187,7 +214,10 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al cerrar sesión: ${e.toString()}'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al cerrar sesión: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -204,13 +234,15 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('Perfil'),
         actions: [
           TextButton(
-            onPressed: _isSaving ? null : () {
-              if (_isEditing) {
-                _saveChanges();
-              } else {
-                setState(() => _isEditing = true);
-              }
-            },
+            onPressed: _isSaving
+                ? null
+                : () {
+                    if (_isEditing) {
+                      _saveChanges();
+                    } else {
+                      setState(() => _isEditing = true);
+                    }
+                  },
             child: _isSaving
                 ? const CircularProgressIndicator()
                 : Text(_isEditing ? 'Guardar' : 'Editar'),
@@ -229,7 +261,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('No se pudo cargar el perfil.'),
-                  TextButton(onPressed: () => setState(() { _profileFuture = _loadProfile(); }), child: const Text('Reintentar')),
+                  TextButton(
+                    onPressed: () => setState(() {
+                      _profileFuture = _loadProfile();
+                    }),
+                    child: const Text('Reintentar'),
+                  ),
                 ],
               ),
             );
@@ -252,17 +289,49 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 32),
             _buildTextField(context, _nameController, 'Nombre', Icons.person),
             const SizedBox(height: 16),
-            _buildTextField(context, _floreriaController, 'Florería', Icons.store),
+            _buildTextField(
+              context,
+              _floreriaController,
+              'Florería',
+              Icons.store,
+            ),
             const SizedBox(height: 16),
-            _buildTextField(context, _telefonoController, 'Teléfono', Icons.phone),
+            _buildTextField(
+              context,
+              _telefonoController,
+              'Teléfono',
+              Icons.phone,
+            ),
             const SizedBox(height: 16),
-            _buildTextField(context, _locationController, 'Ubicación', Icons.location_on),
+            _buildTextField(
+              context,
+              _locationController,
+              'Ubicación',
+              Icons.location_on,
+            ),
             const SizedBox(height: 16),
-            _buildTextField(context, _businessHoursController, 'Horario de Atención', Icons.access_time),
+            _buildTextField(
+              context,
+              _businessHoursController,
+              'Horario de Atención',
+              Icons.access_time,
+            ),
             const SizedBox(height: 16),
-            _buildTextField(context, _businessDescriptionController, 'Descripción del Negocio', Icons.description, maxLines: 3),
+            _buildTextField(
+              context,
+              _businessDescriptionController,
+              'Descripción del Negocio',
+              Icons.description,
+              maxLines: 3,
+            ),
             const SizedBox(height: 16),
-            _buildTextField(context, _emailController, 'Correo', Icons.email, isEditable: false),
+            _buildTextField(
+              context,
+              _emailController,
+              'Correo',
+              Icons.email,
+              isEditable: false,
+            ),
             const SizedBox(height: 16),
             _buildSocialMediaLinksSection(context),
             const SizedBox(height: 32),
@@ -294,9 +363,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 CircleAvatar(
                   radius: 60,
                   backgroundColor: theme.colorScheme.primary,
-                  backgroundImage: _avatarUrl != null ? NetworkImage(_avatarUrl!) : null,
+                  backgroundImage: _avatarUrl != null
+                      ? NetworkImage(_avatarUrl!)
+                      : null,
                   child: _avatarUrl == null
-                      ? Icon(Icons.person, size: 60, color: theme.colorScheme.onPrimary)
+                      ? Icon(
+                          Icons.person,
+                          size: 60,
+                          color: theme.colorScheme.onPrimary,
+                        )
                       : null,
                 ),
                 if (_isEditing)
@@ -309,17 +384,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         color: theme.colorScheme.surface,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.edit, color: theme.colorScheme.primary, size: 20),
+                      child: Icon(
+                        Icons.edit,
+                        color: theme.colorScheme.primary,
+                        size: 20,
+                      ),
                     ),
                   ),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            _nameController.text,
-            style: theme.textTheme.headlineSmall,
-          ),
+          Text(_nameController.text, style: theme.textTheme.headlineSmall),
         ],
       ),
     );
@@ -365,10 +441,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Redes Sociales',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        Text('Redes Sociales', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         ..._socialMediaControllers.asMap().entries.map((entry) {
           int index = entry.key;
@@ -378,11 +451,20 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Row(
               children: [
                 Expanded(
-                  child: _buildTextField(context, controller, 'Enlace de Red Social', Icons.link, isEditable: _isEditing),
+                  child: _buildTextField(
+                    context,
+                    controller,
+                    'Enlace de Red Social',
+                    Icons.link,
+                    isEditable: _isEditing,
+                  ),
                 ),
                 if (_isEditing)
                   IconButton(
-                    icon: Icon(Icons.remove_circle_outline, color: Theme.of(context).colorScheme.error),
+                    icon: Icon(
+                      Icons.remove_circle_outline,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                     onPressed: () {
                       setState(() {
                         controller.dispose();
@@ -415,12 +497,15 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Contraseña',
-           style: Theme.of(context).textTheme.titleMedium,
-        ),
+        Text('Contraseña', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
-        _buildTextField(context, TextEditingController(text: '********'), 'Contraseña', Icons.lock, isEditable: false),
+        _buildTextField(
+          context,
+          TextEditingController(text: '********'),
+          'Contraseña',
+          Icons.lock,
+          isEditable: false,
+        ),
         const SizedBox(height: 8),
         Align(
           alignment: Alignment.centerRight,

@@ -22,12 +22,14 @@ class EncargoHomeScreen extends ConsumerWidget {
             onPressed: () {
               // TODO: Implement final save/summary logic
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Encargo consolidado (simulación)')),
+                const SnackBar(
+                  content: Text('Encargo consolidado (simulación)'),
+                ),
               );
               // ref.read(encargoServiceProvider.notifier).resetEncargo();
             },
             child: const Text('Finalizar'),
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -80,7 +82,10 @@ class _EncargoStepCard extends StatelessWidget {
     return Card(
       elevation: 2,
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 16,
+        ),
         leading: Icon(
           isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
           color: isCompleted ? Colors.green : Colors.grey,

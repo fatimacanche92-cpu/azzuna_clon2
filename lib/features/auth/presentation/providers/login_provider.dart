@@ -15,11 +15,7 @@ class LoginState {
     this.isSuccess = false,
   });
 
-  LoginState copyWith({
-    bool? isLoading,
-    String? error,
-    bool? isSuccess,
-  }) {
+  LoginState copyWith({bool? isLoading, String? error, bool? isSuccess}) {
     return LoginState(
       isLoading: isLoading ?? this.isLoading,
       error: error,
@@ -49,14 +45,14 @@ class LoginNotifier extends StateNotifier<LoginState> {
         // Guardar credenciales si "Recordarme" está activado
         if (rememberMe) {
           final prefs = await SharedPreferences.getInstance();
-          await prefs.setString(AppConstants.authTokenKey, response.session?.accessToken ?? '');
+          await prefs.setString(
+            AppConstants.authTokenKey,
+            response.session?.accessToken ?? '',
+          );
           await prefs.setString(AppConstants.userIdKey, response.user!.id);
         }
 
-        state = state.copyWith(
-          isLoading: false,
-          isSuccess: true,
-        );
+        state = state.copyWith(isLoading: false, isSuccess: true);
       } else {
         state = state.copyWith(
           isLoading: false,
@@ -66,21 +62,21 @@ class LoginNotifier extends StateNotifier<LoginState> {
     } catch (e) {
       String errorMessage = 'Error al iniciar sesión';
       final errorString = e.toString();
-      
+
       // Debug: imprimir el error completo
       // print('Error de login: $errorString');
-      
-      if (errorString.contains('Invalid login credentials') || 
+
+      if (errorString.contains('Invalid login credentials') ||
           errorString.contains('invalid_credentials') ||
           errorString.contains('Invalid credentials')) {
         errorMessage = 'Correo o contraseña incorrectos';
-      } else if (errorString.contains('Email not confirmed') || 
-                 errorString.contains('email_not_confirmed') ||
-                 errorString.contains('email_not_verified')) {
+      } else if (errorString.contains('Email not confirmed') ||
+          errorString.contains('email_not_confirmed') ||
+          errorString.contains('email_not_verified')) {
         errorMessage = 'email_not_verified';
-      } else if (errorString.contains('network') || 
-                 errorString.contains('Network') ||
-                 errorString.contains('connection')) {
+      } else if (errorString.contains('network') ||
+          errorString.contains('Network') ||
+          errorString.contains('connection')) {
         errorMessage = 'Error de conexión. Verifica tu internet';
       } else if (errorString.contains('User not found')) {
         errorMessage = 'Usuario no encontrado. Verifica tu correo electrónico';
@@ -89,10 +85,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
         errorMessage = 'Error: ${e.toString().split(':').last.trim()}';
       }
 
-      state = state.copyWith(
-        isLoading: false,
-        error: errorMessage,
-      );
+      state = state.copyWith(isLoading: false, error: errorMessage);
     }
   }
 
@@ -109,4 +102,3 @@ class LoginNotifier extends StateNotifier<LoginState> {
 final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>(
   (ref) => LoginNotifier(),
 );
-

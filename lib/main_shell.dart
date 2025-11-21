@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class MainShell extends StatelessWidget {
-  const MainShell({
-    super.key,
-    required this.navigationShell,
-  });
+  const MainShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
@@ -24,14 +21,8 @@ class MainShell extends StatelessWidget {
         currentIndex: navigationShell.currentIndex,
         onTap: _goBranch,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt),
-            label: 'Pedidos',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Pedidos'),
           BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),
             label: 'Cámara',

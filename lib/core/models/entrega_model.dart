@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 enum DeliveryType { pasaPorEl, porEntrega }
+
 enum PaymentStatus { pagado }
 
 @immutable
@@ -29,7 +30,6 @@ class Entrega {
   final String? recipientName;
   final String? note;
   final String? remitente;
-
 
   Entrega copyWith({
     DeliveryType? deliveryType,

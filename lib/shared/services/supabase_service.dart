@@ -25,9 +25,7 @@ class SupabaseService {
   /// Obtiene el cliente de Supabase
   static SupabaseClient get client {
     if (_client == null) {
-      throw const ConnectionFailure(
-        'Supabase no ha sido inicializado',
-      );
+      throw const ConnectionFailure('Supabase no ha sido inicializado');
     }
     return _client!;
   }
@@ -38,4 +36,3 @@ class SupabaseService {
   /// Verifica si hay un usuario autenticado
   static bool get isAuthenticated => currentUser != null;
 }
-

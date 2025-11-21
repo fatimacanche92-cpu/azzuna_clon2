@@ -67,7 +67,10 @@ class OrdersListPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Mis Encargos',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
         backgroundColor: Colors.white,
         elevation: 1,
@@ -117,7 +120,9 @@ class _OrderItem extends StatelessWidget {
                     ),
                   ),
                   Icon(
-                    order.deliveryType == OrderDeliveryType.envio ? Icons.local_shipping_outlined : Icons.store_outlined,
+                    order.deliveryType == OrderDeliveryType.envio
+                        ? Icons.local_shipping_outlined
+                        : Icons.store_outlined,
                     color: Colors.grey[700],
                   ),
                 ],
@@ -143,7 +148,10 @@ class _OrderItem extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: statusStyle['color'].withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),

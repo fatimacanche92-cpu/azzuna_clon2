@@ -24,10 +24,7 @@ class HomeView extends StatelessWidget {
           const SizedBox(height: 4),
           const Text(
             'Descubre tus arreglos florales',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.textLight,
-            ),
+            style: TextStyle(fontSize: 16, color: AppColors.textLight),
           ),
           const SizedBox(height: 24),
 
@@ -66,24 +63,15 @@ class HomeView extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _buildStatCard(
-                  value: '24',
-                  label: 'Arreglos',
-                ),
+                child: _buildStatCard(value: '24', label: 'Arreglos'),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildStatCard(
-                  value: '8',
-                  label: 'Eventos',
-                ),
+                child: _buildStatCard(value: '8', label: 'Eventos'),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildStatCard(
-                  value: '12',
-                  label: 'Regalos',
-                ),
+                child: _buildStatCard(value: '12', label: 'Regalos'),
               ),
             ],
           ),
@@ -185,10 +173,7 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard({
-    required String value,
-    required String label,
-  }) {
+  Widget _buildStatCard({required String value, required String label}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -215,14 +200,10 @@ class HomeView extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textLight,
-            ),
+            style: const TextStyle(fontSize: 14, color: AppColors.textLight),
           ),
         ],
       ),
     );
   }
 }
-

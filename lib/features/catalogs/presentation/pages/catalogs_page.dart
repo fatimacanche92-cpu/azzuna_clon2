@@ -65,7 +65,13 @@ class _CatalogsPageState extends State<CatalogsPage> {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text(album.title, style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                pw.Text(
+                  album.title,
+                  style: pw.TextStyle(
+                    fontSize: 24,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
                 if (album.description != null && album.description!.isNotEmpty)
                   pw.Padding(
                     padding: const pw.EdgeInsets.only(top: 10),
@@ -89,7 +95,9 @@ class _CatalogsPageState extends State<CatalogsPage> {
                         width: 150,
                         color: PdfColors.grey300,
                         alignment: pw.Alignment.center,
-                        child: pw.Text('Image Placeholder'), // Placeholder for actual image
+                        child: pw.Text(
+                          'Image Placeholder',
+                        ), // Placeholder for actual image
                       );
                     }).toList(),
                   ),
@@ -100,18 +108,26 @@ class _CatalogsPageState extends State<CatalogsPage> {
       );
 
       final output = await getTemporaryDirectory();
-      final file = File("${output.path}/${album.title.replaceAll(' ', '_')}.pdf");
+      final file = File(
+        "${output.path}/${album.title.replaceAll(' ', '_')}.pdf",
+      );
       await file.writeAsBytes(await pdf.save());
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('PDF exportado a ${file.path}'), backgroundColor: Colors.green),
+          SnackBar(
+            content: Text('PDF exportado a ${file.path}'),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al exportar PDF: ${e.toString()}'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al exportar PDF: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -137,7 +153,10 @@ class _CatalogsPageState extends State<CatalogsPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al compartir: ${e.toString()}'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Error al compartir: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -147,7 +166,13 @@ class _CatalogsPageState extends State<CatalogsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Catálogos', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: primaryColor)),
+        title: Text(
+          'Catálogos',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -158,13 +183,13 @@ class _CatalogsPageState extends State<CatalogsPage> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _allCatalogAlbums.isEmpty
-                    ? const Center(child: Text('No hay álbumes en catálogo.'))
-                    : ListView.builder(
-                        itemCount: _allCatalogAlbums.length,
-                        itemBuilder: (context, index) {
-                          return _buildCatalogAlbumCard(_allCatalogAlbums[index]);
-                        },
-                      ),
+                ? const Center(child: Text('No hay álbumes en catálogo.'))
+                : ListView.builder(
+                    itemCount: _allCatalogAlbums.length,
+                    itemBuilder: (context, index) {
+                      return _buildCatalogAlbumCard(_allCatalogAlbums[index]);
+                    },
+                  ),
           ),
         ],
       ),
@@ -230,13 +255,28 @@ class _CatalogsPageState extends State<CatalogsPage> {
                   final imageUrl = album.photoUrls[index];
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Image.file(File(imageUrl), width: 90, height: 90, fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Image.network(imageUrl, width: 90, height: 90, fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 90, height: 90, color: Colors.grey,
-                          child: const Icon(Icons.broken_image, color: Colors.white),
-                        ),
-                      ),
+                    child: Image.file(
+                      File(imageUrl),
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Image.network(
+                            imageUrl,
+                            width: 90,
+                            height: 90,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: 90,
+                                  height: 90,
+                                  color: Colors.grey,
+                                  child: const Icon(
+                                    Icons.broken_image,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                          ),
                     ),
                   );
                 },

@@ -2,11 +2,11 @@
 class AppConstants {
   // API
   static const String apiTimeout = 'API_TIMEOUT';
-  
+
   // Storage Keys
   static const String authTokenKey = 'auth_token';
   static const String userIdKey = 'user_id';
-  
+
   // Routes
   static const String loginRoute = '/';
   static const String registerRoute = '/register';
@@ -21,12 +21,11 @@ class AppConstants {
   static const String galleryRoute = '/gallery';
   static const String draftsRoute = '/drafts';
   static const String catalogsRoute = '/catalogs';
-  
+
   // Pagination
   static const int defaultPageSize = 20;
-  
+
   // Timeouts
   static const Duration connectionTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
 }
-

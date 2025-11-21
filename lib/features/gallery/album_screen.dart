@@ -14,9 +14,7 @@ class AlbumScreen extends ConsumerWidget {
     if (album == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: const Center(
-          child: Text('Álbum no encontrado.'),
-        ),
+        body: const Center(child: Text('Álbum no encontrado.')),
       );
     }
 
@@ -58,7 +56,9 @@ class AlbumScreen extends ConsumerWidget {
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.white),
                       onPressed: () {
-                        ref.read(galleryServiceProvider.notifier).deletePhoto(albumId, photoPath);
+                        ref
+                            .read(galleryServiceProvider.notifier)
+                            .deletePhoto(albumId, photoPath);
                       },
                     ),
                   ),

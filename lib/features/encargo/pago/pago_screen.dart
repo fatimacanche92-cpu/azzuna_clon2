@@ -26,14 +26,14 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
   void _onSave() {
     if (_paymentMethod == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, selecciona un método de pago')),
+        const SnackBar(
+          content: Text('Por favor, selecciona un método de pago'),
+        ),
       );
       return;
     }
-    
-    final newPago = Pago(
-      paymentMethod: _paymentMethod,
-    );
+
+    final newPago = Pago(paymentMethod: _paymentMethod);
     ref.read(encargoServiceProvider.notifier).updatePago(newPago);
     // Here you would normally proceed to a real payment gateway
     ScaffoldMessenger.of(context).showSnackBar(
@@ -51,31 +51,50 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
     const total = price + shippingCost;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Paso 4: Pago'),
-      ),
+      appBar: AppBar(title: const Text('Paso 4: Pago')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // Resumen del Cobro
-          Text('Resumen del Cobro', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Resumen del Cobro',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 16),
           Card(
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSummaryRow('Arreglo', arreglo?.flowerType ?? 'No seleccionado'),
-                  _buildSummaryRow('Tamaño', arreglo?.size?.name.toUpperCase() ?? 'N/A'),
-                  _buildSummaryRow('Colores', arreglo?.colors.join(', ') ?? 'N/A'),
+                  _buildSummaryRow(
+                    'Arreglo',
+                    arreglo?.flowerType ?? 'No seleccionado',
+                  ),
+                  _buildSummaryRow(
+                    'Tamaño',
+                    arreglo?.size?.name.toUpperCase() ?? 'N/A',
+                  ),
+                  _buildSummaryRow(
+                    'Colores',
+                    arreglo?.colors.join(', ') ?? 'N/A',
+                  ),
                   const Divider(height: 24),
                   _buildSummaryRow('Precio', '\$${price.toStringAsFixed(2)}'),
-                  _buildSummaryRow('Costo de Envío', '\$${shippingCost.toStringAsFixed(2)}'),
+                  _buildSummaryRow(
+                    'Costo de Envío',
+                    '\$${shippingCost.toStringAsFixed(2)}',
+                  ),
                   const Divider(height: 24),
-                  _buildSummaryRow('Total', '\$${total.toStringAsFixed(2)}', isTotal: true),
+                  _buildSummaryRow(
+                    'Total',
+                    '\$${total.toStringAsFixed(2)}',
+                    isTotal: true,
+                  ),
                 ],
               ),
             ),
@@ -83,7 +102,10 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
           const SizedBox(height: 32),
 
           // Métodos de Pago
-          Text('Métodos de Pago', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Métodos de Pago',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 16),
           RadioListTile<PaymentMethod>(
             title: const Text('Mastercard'),
@@ -102,7 +124,6 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
             value: PaymentMethod.paypal,
             groupValue: _paymentMethod,
             onChanged: (v) => setState(() => _paymentMethod = v),
-  
           ),
           const SizedBox(height: 32),
           ElevatedButton(
@@ -119,9 +140,9 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
 
   Widget _buildSummaryRow(String title, String value, {bool isTotal = false}) {
     final style = Theme.of(context).textTheme.bodyLarge?.copyWith(
-          fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-          fontSize: isTotal ? 18 : 16,
-        );
+      fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+      fontSize: isTotal ? 18 : 16,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(

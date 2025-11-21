@@ -53,7 +53,9 @@ class _DraftsPageState extends State<DraftsPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: _DraftAlbumForm(
           album: album,
           onSave: () {
@@ -69,7 +71,13 @@ class _DraftsPageState extends State<DraftsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Borradores', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: primaryColor)),
+        title: Text(
+          'Borradores',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -86,13 +94,13 @@ class _DraftsPageState extends State<DraftsPage> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _allDraftAlbums.isEmpty
-                    ? const Center(child: Text('No hay álbumes en borrador.'))
-                    : ListView.builder(
-                        itemCount: _allDraftAlbums.length,
-                        itemBuilder: (context, index) {
-                          return _buildDraftAlbumCard(_allDraftAlbums[index]);
-                        },
-                      ),
+                ? const Center(child: Text('No hay álbumes en borrador.'))
+                : ListView.builder(
+                    itemCount: _allDraftAlbums.length,
+                    itemBuilder: (context, index) {
+                      return _buildDraftAlbumCard(_allDraftAlbums[index]);
+                    },
+                  ),
           ),
         ],
       ),
@@ -136,12 +144,20 @@ class _DraftsPageState extends State<DraftsPage> {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('Confirmar eliminación'),
-                    content: const Text('¿Estás seguro de que quieres eliminar este álbum?'),
+                    content: const Text(
+                      '¿Estás seguro de que quieres eliminar este álbum?',
+                    ),
                     actions: [
-                      TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancelar')),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Cancelar'),
+                      ),
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+                        child: const Text(
+                          'Eliminar',
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
                     ],
                   ),
@@ -152,13 +168,19 @@ class _DraftsPageState extends State<DraftsPage> {
                     _loadDraftAlbums();
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Álbum eliminado.'), backgroundColor: Colors.green),
+                        const SnackBar(
+                          content: Text('Álbum eliminado.'),
+                          backgroundColor: Colors.green,
+                        ),
                       );
                     }
                   } catch (e) {
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
+                        SnackBar(
+                          content: Text('Error: ${e.toString()}'),
+                          backgroundColor: Colors.red,
+                        ),
                       );
                     }
                   }
@@ -180,13 +202,28 @@ class _DraftsPageState extends State<DraftsPage> {
                   final imageUrl = album.photoUrls[index];
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Image.file(File(imageUrl), width: 90, height: 90, fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Image.network(imageUrl, width: 90, height: 90, fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 90, height: 90, color: Colors.grey,
-                          child: const Icon(Icons.broken_image, color: Colors.white),
-                        ),
-                      ),
+                    child: Image.file(
+                      File(imageUrl),
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Image.network(
+                            imageUrl,
+                            width: 90,
+                            height: 90,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: 90,
+                                  height: 90,
+                                  color: Colors.grey,
+                                  child: const Icon(
+                                    Icons.broken_image,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                          ),
                     ),
                   );
                 },
@@ -222,16 +259,26 @@ class __DraftAlbumFormState extends State<_DraftAlbumForm> {
   List<String> _selectedPhotoPaths = [];
   bool _isSaving = false;
 
-  static const Color primaryColor = Color(0xFF340A6B); // Defined primaryColor here
+  static const Color primaryColor = Color(
+    0xFF340A6B,
+  ); // Defined primaryColor here
 
-  final List<String> _classificationOptions = ['Completo', 'En Revisión', 'Incompleto'];
+  final List<String> _classificationOptions = [
+    'Completo',
+    'En Revisión',
+    'Incompleto',
+  ];
 
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.album?.title ?? '');
-    _descriptionController = TextEditingController(text: widget.album?.description ?? '');
-    _classification = widget.album?.classification ?? 'Incompleto'; // Ensure it's always non-null
+    _descriptionController = TextEditingController(
+      text: widget.album?.description ?? '',
+    );
+    _classification =
+        widget.album?.classification ??
+        'Incompleto'; // Ensure it's always non-null
     _selectedPhotoPaths = List.from(widget.album?.photoUrls ?? []);
   }
 
@@ -262,14 +309,18 @@ class __DraftAlbumFormState extends State<_DraftAlbumForm> {
         if (widget.album == null) {
           await _draftService.addDraftAlbum(
             title: _titleController.text,
-            description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+            description: _descriptionController.text.isEmpty
+                ? null
+                : _descriptionController.text,
             photoUrls: _selectedPhotoPaths.isEmpty ? null : _selectedPhotoPaths,
             classification: _classification, // Now non-nullable
           );
         } else {
           final updatedAlbum = widget.album!.copyWith(
             title: _titleController.text,
-            description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+            description: _descriptionController.text.isEmpty
+                ? null
+                : _descriptionController.text,
             photoUrls: _selectedPhotoPaths.isEmpty ? [] : _selectedPhotoPaths,
             classification: _classification, // Now non-nullable
             updatedAt: DateTime.now(),
@@ -278,14 +329,20 @@ class __DraftAlbumFormState extends State<_DraftAlbumForm> {
         }
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Álbum guardado.'), backgroundColor: Colors.green),
+            const SnackBar(
+              content: Text('Álbum guardado.'),
+              backgroundColor: Colors.green,
+            ),
           );
         }
         widget.onSave();
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error al guardar: ${e.toString()}'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text('Error al guardar: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       } finally {
@@ -308,18 +365,26 @@ class __DraftAlbumFormState extends State<_DraftAlbumForm> {
             children: [
               Text(
                 widget.album == null ? 'Crear Nuevo Álbum' : 'Editar Álbum',
-                style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Título del Álbum'),
-                validator: (value) => value!.isEmpty ? 'El título no puede estar vacío' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Título del Álbum',
+                ),
+                validator: (value) =>
+                    value!.isEmpty ? 'El título no puede estar vacío' : null,
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Descripción (Opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Descripción (Opcional)',
+                ),
                 maxLines: 3,
               ),
               const SizedBox(height: 20),
@@ -341,33 +406,52 @@ class __DraftAlbumFormState extends State<_DraftAlbumForm> {
               const SizedBox(height: 20),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Fotos del Álbum:', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+                child: Text(
+                  'Fotos del Álbum:',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 8.0,
                 runSpacing: 8.0,
                 children: [
-                  ..._selectedPhotoPaths.map((path) => Stack(
-                    children: [
-                      Image.file(File(path), width: 100, height: 100, fit: BoxFit.cover),
-                      Positioned(
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedPhotoPaths.remove(path);
-                            });
-                          },
-                          child: const CircleAvatar(
-                            radius: 12,
-                            backgroundColor: Colors.red,
-                            child: Icon(Icons.close, color: Colors.white, size: 16),
-                          ),
+                  ..._selectedPhotoPaths
+                      .map(
+                        (path) => Stack(
+                          children: [
+                            Image.file(
+                              File(path),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned(
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedPhotoPaths.remove(path);
+                                  });
+                                },
+                                child: const CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Colors.red,
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  )).toList(),
+                      )
+                      .toList(),
                   GestureDetector(
                     onTap: _pickImages,
                     child: Container(
@@ -387,12 +471,19 @@ class __DraftAlbumFormState extends State<_DraftAlbumForm> {
                 onPressed: _isSaving ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
                 child: _isSaving
-                    ? const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white))
-                    : const Text('Guardar Álbum', style: TextStyle(color: Colors.white)),
-              )
+                    ? const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      )
+                    : const Text(
+                        'Guardar Álbum',
+                        style: TextStyle(color: Colors.white),
+                      ),
+              ),
             ],
           ),
         ),

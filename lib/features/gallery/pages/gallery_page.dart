@@ -12,7 +12,8 @@ class GalleryPage extends StatefulWidget {
   _GalleryPageState createState() => _GalleryPageState();
 }
 
-class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStateMixin {
+class _GalleryPageState extends State<GalleryPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final AlbumService _albumService = AlbumService();
 
@@ -57,7 +58,9 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
       context: context,
       isScrollControlled: true,
       builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: _AlbumForm(
           album: album,
           albumType: currentType,
@@ -74,7 +77,13 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Galería', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: primaryColor)),
+        title: Text(
+          'Galería',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: TabBar(
@@ -125,7 +134,9 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
         return Card(
           elevation: 4,
           clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           child: InkWell(
             onTap: () {
               // Navigator.push(
@@ -135,19 +146,30 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
               //   ),
               // );
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Navegando a los detalles de "${album.name}"... (No implementado)')),
+                SnackBar(
+                  content: Text(
+                    'Navegando a los detalles de "${album.name}"... (No implementado)',
+                  ),
+                ),
               );
             },
             child: GridTile(
               footer: GridTileBar(
                 backgroundColor: Colors.black45,
-                title: Text(album.name, style: GoogleFonts.poppins(color: Colors.white)),
+                title: Text(
+                  album.name,
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
               ),
               header: Align(
                 alignment: Alignment.topRight,
                 child: _buildPopupMenu(album),
               ),
-              child: const Icon(Icons.photo_album, size: 60, color: primaryColor),
+              child: const Icon(
+                Icons.photo_album,
+                size: 60,
+                color: primaryColor,
+              ),
             ),
           ),
         );
@@ -167,7 +189,10 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
       },
       itemBuilder: (context) => [
         const PopupMenuItem(value: 'edit', child: Text('Editar')),
-        const PopupMenuItem(value: 'delete', child: Text('Eliminar', style: TextStyle(color: Colors.red))),
+        const PopupMenuItem(
+          value: 'delete',
+          child: Text('Eliminar', style: TextStyle(color: Colors.red)),
+        ),
       ],
     );
   }
@@ -177,9 +202,14 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirmar eliminación'),
-        content: Text('¿Estás seguro de que quieres eliminar el álbum "${album.name}"?'),
+        content: Text(
+          '¿Estás seguro de que quieres eliminar el álbum "${album.name}"?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
@@ -194,13 +224,19 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
         _loadAlbums();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Álbum eliminado.'), backgroundColor: Colors.green),
+            const SnackBar(
+              content: Text('Álbum eliminado.'),
+              backgroundColor: Colors.green,
+            ),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error al eliminar: ${e.toString()}'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text('Error al eliminar: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       }
@@ -254,14 +290,20 @@ class __AlbumFormState extends State<_AlbumForm> {
         }
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Álbum guardado.'), backgroundColor: Colors.green),
+            const SnackBar(
+              content: Text('Álbum guardado.'),
+              backgroundColor: Colors.green,
+            ),
           );
         }
         widget.onSave();
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error al guardar: ${e.toString()}'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text('Error al guardar: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       } finally {
@@ -283,19 +325,25 @@ class __AlbumFormState extends State<_AlbumForm> {
           children: [
             Text(
               widget.album == null ? 'Crear Álbum' : 'Editar Álbum',
-              style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 20),
             TextFormField(
               initialValue: _name,
               decoration: const InputDecoration(labelText: 'Nombre del álbum'),
-              validator: (value) => value!.isEmpty ? 'El nombre no puede estar vacío' : null,
+              validator: (value) =>
+                  value!.isEmpty ? 'El nombre no puede estar vacío' : null,
               onSaved: (value) => _name = value!,
             ),
             const SizedBox(height: 10),
             TextFormField(
               initialValue: _description,
-              decoration: const InputDecoration(labelText: 'Descripción (Opcional)'),
+              decoration: const InputDecoration(
+                labelText: 'Descripción (Opcional)',
+              ),
               onSaved: (value) => _description = value ?? '',
               maxLines: 3,
             ),
@@ -304,13 +352,23 @@ class __AlbumFormState extends State<_AlbumForm> {
               onPressed: _isSaving ? null : _submit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _GalleryPageState.primaryColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 15,
+                ),
               ),
               child: _isSaving
-                  ? const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white))
-                  : const Text('Guardar', style: TextStyle(color: Colors.white)),
-            )
+                  ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                    )
+                  : const Text(
+                      'Guardar',
+                      style: TextStyle(color: Colors.white),
+                    ),
+            ),
           ],
         ),
       ),

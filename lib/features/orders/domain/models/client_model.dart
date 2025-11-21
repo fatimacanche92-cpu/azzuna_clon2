@@ -11,5 +11,6 @@ class ClientModel with _$ClientModel {
     required String phone,
   }) = _ClientModel;
 
-  factory ClientModel.fromJson(Map<String, dynamic> json) => _$ClientModelFromJson(json);
+  factory ClientModel.fromJson(Map<String, dynamic> json) =>
+      _$ClientModelFromJson(json);
 }

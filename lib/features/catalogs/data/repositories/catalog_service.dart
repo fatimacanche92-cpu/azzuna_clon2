@@ -48,7 +48,9 @@ class CatalogService {
   Future<void> importDraftAlbumToCatalog(DraftAlbum draftAlbum) async {
     // Mock implementation
     // ignore: avoid_print
-    print('MOCK: importDraftAlbumToCatalog called for draft: ${draftAlbum.title}');
+    print(
+      'MOCK: importDraftAlbumToCatalog called for draft: ${draftAlbum.title}',
+    );
     return Future.value();
   }
 }

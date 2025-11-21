@@ -19,13 +19,18 @@ class ReminderService {
           .from('reminders')
           .select()
           .eq('user_id', userId)
-          .order('reminder_datetime', ascending: true); // FIX: Column name is reminder_datetime
+          .order(
+            'reminder_datetime',
+            ascending: true,
+          ); // FIX: Column name is reminder_datetime
 
       return data.map((json) => Reminder.fromJson(json)).toList();
     } catch (e) {
       // ignore: avoid_print
       print('Error in getReminders: $e');
-      throw Exception('Error getting reminders. Please check your connection and try again.');
+      throw Exception(
+        'Error getting reminders. Please check your connection and try again.',
+      );
     }
   }
 
@@ -51,21 +56,23 @@ class ReminderService {
   }) async {
     try {
       final userId = _getUserId();
-      
+
       // Combine title and description into a single note.
       final note = (title.isNotEmpty ? '$title\n' : '') + (description ?? '');
 
       // Combine order specifications
-      final customization = [orderSpecification, specialFlowerInstructions]
-          .where((s) => s != null && s.isNotEmpty)
-          .join('\n');
+      final customization = [
+        orderSpecification,
+        specialFlowerInstructions,
+      ].where((s) => s != null && s.isNotEmpty).join('\n');
 
       final reminder = {
         'user_id': userId,
         'client_name': clientName,
         'client_phone': clientPhoneNumber,
         'client_address': clientAddress,
-        'has_paid': paymentStatus != null && paymentStatus.toLowerCase() == 'paid',
+        'has_paid':
+            paymentStatus != null && paymentStatus.toLowerCase() == 'paid',
         'advance_amount': amountPaid,
         'remaining_amount': amountDue,
         'is_anonymous': isAnonymous,
@@ -81,7 +88,6 @@ class ReminderService {
       };
 
       await _supabase.from('reminders').insert(reminder);
-
     } catch (e) {
       // ignore: avoid_print
       print('Error in addReminder: $e');
@@ -101,7 +107,10 @@ class ReminderService {
           .from('reminders')
           .update(updates)
           .eq('id', reminder.id)
-          .eq('user_id', userId); // Ensure user can only update their own reminders
+          .eq(
+            'user_id',
+            userId,
+          ); // Ensure user can only update their own reminders
     } catch (e) {
       // ignore: avoid_print
       print('Error in updateReminder: $e');
@@ -116,7 +125,10 @@ class ReminderService {
           .from('reminders')
           .delete()
           .eq('id', id)
-          .eq('user_id', userId); // Ensure user can only delete their own reminders
+          .eq(
+            'user_id',
+            userId,
+          ); // Ensure user can only delete their own reminders
     } catch (e) {
       // ignore: avoid_print
       print('Error in deleteReminder: $e');

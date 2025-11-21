@@ -18,10 +18,7 @@ class LoginPage extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.roseQuartz.withOpacity(0.5),
-              AppColors.blush,
-            ],
+            colors: [AppColors.roseQuartz.withOpacity(0.5), AppColors.blush],
           ),
         ),
         child: SafeArea(
@@ -52,7 +49,7 @@ class LoginPage extends ConsumerWidget {
                         // Logo con brillitos
                         _buildLogo(context),
                         const SizedBox(height: 16),
-                        
+
                         // Título de la app
                         Text(
                           'Azzuna',
@@ -62,7 +59,7 @@ class LoginPage extends ConsumerWidget {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
-                        
+
                         // Tagline
                         Text(
                           'Haz sonreir con flores',
@@ -70,7 +67,7 @@ class LoginPage extends ConsumerWidget {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 32),
-                        
+
                         // Formulario
                         const LoginForm(),
                       ],
@@ -119,10 +116,7 @@ class LoginPage extends ConsumerWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.redWine,
-                          AppColors.blush,
-                        ],
+                        colors: [AppColors.redWine, AppColors.blush],
                       ),
                     ),
                     child: const Icon(
@@ -138,10 +132,18 @@ class LoginPage extends ConsumerWidget {
           // Brillitos blancos alrededor del logo (efectos bokeh)
           ...List.generate(8, (index) {
             final radius = 55.0;
-            final x = 60 + radius * 0.8 * (index.isEven ? 1 : -1) * 
-                (index % 4 == 0 ? 0.6 : 1);
-            final y = 60 + radius * 0.8 * (index.isOdd ? 1 : -1) * 
-                (index % 4 == 1 ? 0.6 : 1);
+            final x =
+                60 +
+                radius *
+                    0.8 *
+                    (index.isEven ? 1 : -1) *
+                    (index % 4 == 0 ? 0.6 : 1);
+            final y =
+                60 +
+                radius *
+                    0.8 *
+                    (index.isOdd ? 1 : -1) *
+                    (index % 4 == 1 ? 0.6 : 1);
             return Positioned(
               left: x - 3,
               top: y - 3,
@@ -167,4 +169,3 @@ class LoginPage extends ConsumerWidget {
     );
   }
 }
-

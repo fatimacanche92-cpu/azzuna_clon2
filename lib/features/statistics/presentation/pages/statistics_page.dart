@@ -24,9 +24,27 @@ class StatisticsPage extends StatelessWidget {
 
   // Dummy data for demonstration
   static final List<Transaction> _transactions = [
-    Transaction(id: 't001', orderId: '004', amount: 300.0, date: DateTime.now().subtract(const Duration(days: 1)), status: 'Anticipo'),
-    Transaction(id: 't002', orderId: '005', amount: 420.0, date: DateTime.now().subtract(const Duration(days: 2)), status: 'Completo'),
-    Transaction(id: 't003', orderId: '001', amount: 50.0, date: DateTime.now().subtract(const Duration(days: 3)), status: 'Completo'),
+    Transaction(
+      id: 't001',
+      orderId: '004',
+      amount: 300.0,
+      date: DateTime.now().subtract(const Duration(days: 1)),
+      status: 'Anticipo',
+    ),
+    Transaction(
+      id: 't002',
+      orderId: '005',
+      amount: 420.0,
+      date: DateTime.now().subtract(const Duration(days: 2)),
+      status: 'Completo',
+    ),
+    Transaction(
+      id: 't003',
+      orderId: '001',
+      amount: 50.0,
+      date: DateTime.now().subtract(const Duration(days: 3)),
+      status: 'Completo',
+    ),
   ];
 
   @override
@@ -35,7 +53,10 @@ class StatisticsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Estadísticas',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.black),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
         backgroundColor: Colors.white,
         elevation: 1,
@@ -140,7 +161,10 @@ class _TransactionItem extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     DateFormat.yMMMd().format(transaction.date),
-                    style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
@@ -165,7 +189,7 @@ class _TransactionItem extends StatelessWidget {
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

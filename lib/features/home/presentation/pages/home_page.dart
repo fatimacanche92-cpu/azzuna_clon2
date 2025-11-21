@@ -66,9 +66,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               children: [
                 Expanded(
                   child: _buildStatusCard(
-                    icon: '📦',
+                    count: 12, // Placeholder
                     title: 'Pedidos en envío',
-                    subtitle: 'X pedidos activos',
                     onTap: () {
                       context.push('/shipping-orders');
                     },
@@ -77,9 +76,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildStatusCard(
-                    icon: '🛍️',
+                    count: 8, // Placeholder
                     title: 'Pedidos por recoger',
-                    subtitle: 'X pendientes',
                     onTap: () {
                       context.push('/pickup-orders');
                     },
@@ -95,9 +93,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Center(
-                child: Text('Reminders Placeholder'),
-              ),
+              child: const Center(child: Text('Reminders Placeholder')),
             ),
           ],
         ),
@@ -191,19 +187,15 @@ class _HomePageState extends ConsumerState<HomePage> {
           width: 7,
           height: 7,
           margin: const EdgeInsets.symmetric(horizontal: 0.5),
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         );
       }).toList(),
     );
   }
 
   Widget _buildStatusCard({
-    required String icon,
+    required int count,
     required String title,
-    required String subtitle,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -223,26 +215,23 @@ class _HomePageState extends ConsumerState<HomePage> {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              icon,
-              style: const TextStyle(fontSize: 24),
+              count.toString(),
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 40,
+                color: Colors.black87,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               title,
+              textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: GoogleFonts.poppins(
-                color: Theme.of(context).textTheme.bodySmall?.color,
-                fontSize: 12,
               ),
             ),
           ],

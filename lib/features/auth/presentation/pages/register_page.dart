@@ -18,10 +18,7 @@ class RegisterPage extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.roseQuartz.withOpacity(0.5),
-              AppColors.blush,
-            ],
+            colors: [AppColors.roseQuartz.withOpacity(0.5), AppColors.blush],
           ),
         ),
         child: SafeArea(
@@ -53,30 +50,27 @@ class RegisterPage extends ConsumerWidget {
                         Align(
                           alignment: Alignment.topLeft,
                           child: IconButton(
-                            icon: Icon(
-                              Icons.arrow_back,
-                              color: colors.primary,
-                            ),
+                            icon: Icon(Icons.arrow_back, color: colors.primary),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                           ),
                         ),
-                        
+
                         // Logo con brillitos
                         _buildLogo(),
                         const SizedBox(height: 16),
-                        
+
                         // Título
                         Text(
                           'Crear cuenta',
                           style: theme.textTheme.headlineLarge?.copyWith(
-                            color: colors.primary
+                            color: colors.primary,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
-                        
+
                         // Tagline
                         Text(
                           'Únete a Azzuna y comienza a organizar tus arreglos florales',
@@ -84,7 +78,7 @@ class RegisterPage extends ConsumerWidget {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 32),
-                        
+
                         // Formulario
                         const RegisterForm(),
                       ],
@@ -133,10 +127,7 @@ class RegisterPage extends ConsumerWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.redWine,
-                          AppColors.blush,
-                        ],
+                        colors: [AppColors.redWine, AppColors.blush],
                       ),
                     ),
                     child: const Icon(
@@ -152,10 +143,18 @@ class RegisterPage extends ConsumerWidget {
           // Brillitos blancos alrededor del logo (efectos bokeh)
           ...List.generate(8, (index) {
             final radius = 55.0;
-            final x = 60 + radius * 0.8 * (index.isEven ? 1 : -1) * 
-                (index % 4 == 0 ? 0.6 : 1);
-            final y = 60 + radius * 0.8 * (index.isOdd ? 1 : -1) * 
-                (index % 4 == 1 ? 0.6 : 1);
+            final x =
+                60 +
+                radius *
+                    0.8 *
+                    (index.isEven ? 1 : -1) *
+                    (index % 4 == 0 ? 0.6 : 1);
+            final y =
+                60 +
+                radius *
+                    0.8 *
+                    (index.isOdd ? 1 : -1) *
+                    (index % 4 == 1 ? 0.6 : 1);
             return Positioned(
               left: x - 3,
               top: y - 3,
@@ -181,4 +180,3 @@ class RegisterPage extends ConsumerWidget {
     );
   }
 }
-

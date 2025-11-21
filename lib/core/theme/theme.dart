@@ -35,19 +35,18 @@ MaterialColor _createMaterialColor(Color color) {
   return MaterialColor(color.value, swatch);
 }
 
-
 // 2. ThemeData para la paleta "Azzuna"
 final ThemeData azzunaTheme = ThemeData(
   primarySwatch: _createMaterialColor(AppColors.redWine),
   visualDensity: VisualDensity.adaptivePlatformDensity,
   scaffoldBackgroundColor: AppColors.oatMilk,
-  
+
   colorScheme: ColorScheme.fromSeed(
     seedColor: AppColors.redWine,
     primary: AppColors.redWine,
     secondary: AppColors.blush,
     background: AppColors.oatMilk,
-    surface: AppColors.roseQuartz, 
+    surface: AppColors.roseQuartz,
     onPrimary: Colors.white,
     onSecondary: Colors.black,
     onBackground: Colors.black,
@@ -70,9 +69,7 @@ final ThemeData azzunaTheme = ThemeData(
   cardTheme: CardThemeData(
     color: Colors.white, // Un poco más limpio que roseQuartz para las tarjetas
     elevation: 1,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
   ),
 
   floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -108,11 +105,8 @@ final ThemeData azzunaTheme = ThemeData(
 
   textTheme: GoogleFonts.poppinsTextTheme(),
 
-  iconTheme: const IconThemeData(
-    color: AppColors.redWine,
-  ),
+  iconTheme: const IconThemeData(color: AppColors.redWine),
 );
-
 
 // 3. ThemeData para el tema "Original"
 final ThemeData originalTheme = ThemeData(
@@ -149,8 +143,8 @@ final ThemeData originalTheme = ThemeData(
       textStyle: GoogleFonts.poppins(fontWeight: FontWeight.bold),
     ),
   ),
-  
-   textButtonTheme: TextButtonThemeData(
+
+  textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       foregroundColor: AppColors.originalPurple,
       textStyle: GoogleFonts.poppins(fontWeight: FontWeight.bold),
@@ -161,10 +155,9 @@ final ThemeData originalTheme = ThemeData(
     selectedItemColor: Colors.purple,
     unselectedItemColor: Colors.grey,
   ),
-  
+
   textTheme: GoogleFonts.poppinsTextTheme(),
 );
-
 
 // 4. State Notifier para gestionar el tema
 class ThemeNotifier extends StateNotifier<ThemeData> {
@@ -187,7 +180,6 @@ class ThemeNotifier extends StateNotifier<ThemeData> {
     return _revertColors ? originalTheme : azzunaTheme;
   }
 }
-
 
 // 5. Provider para acceder al ThemeNotifier
 final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeData>((ref) {

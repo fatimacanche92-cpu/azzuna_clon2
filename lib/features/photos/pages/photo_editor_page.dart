@@ -21,8 +21,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
   AlbumType? _selectedAlbumType;
 
   Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
     if (pickedFile != null) {
       _cropImage(File(pickedFile.path));
     }
@@ -34,13 +35,12 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       aspectRatio: const cropper.CropAspectRatio(ratioX: 1, ratioY: 1),
       uiSettings: [
         cropper.AndroidUiSettings(
-            toolbarTitle: 'Recortar Imagen',
-            toolbarColor: const Color(0xFFE91E63),
-            toolbarWidgetColor: Colors.white,
-            lockAspectRatio: false),
-        cropper.IOSUiSettings(
-          title: 'Recortar Imagen',
+          toolbarTitle: 'Recortar Imagen',
+          toolbarColor: const Color(0xFFE91E63),
+          toolbarWidgetColor: Colors.white,
+          lockAspectRatio: false,
         ),
+        cropper.IOSUiSettings(title: 'Recortar Imagen'),
       ],
     );
     if (croppedFile != null) {
@@ -56,9 +56,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     final editedImage = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ImageEditor(
-          image: _image!.readAsBytesSync(),
-        ),
+        builder: (context) => ImageEditor(image: _image!.readAsBytesSync()),
       ),
     );
 
@@ -77,8 +75,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         _selectedAlbumType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text(
-                'Por favor, selecciona una imagen, añade un título y elige un álbum.')),
+          content: Text(
+            'Por favor, selecciona una imagen, añade un título y elige un álbum.',
+          ),
+        ),
       );
       return;
     }
@@ -104,9 +104,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       );
       Navigator.of(context).pop();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar la foto: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al guardar la foto: $e')));
     }
   }
 
@@ -114,8 +114,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editor de Fotos',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Editor de Fotos',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: const Color(0xFFFFE8F2),
       ),
       backgroundColor: const Color(0xFFFFE8F2),
@@ -179,10 +181,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                 value: _selectedAlbumType,
                 decoration: _inputDecoration('Guardar en'),
                 items: AlbumType.values
-                    .map((type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(type.name),
-                        ))
+                    .map(
+                      (type) =>
+                          DropdownMenuItem(value: type, child: Text(type.name)),
+                    )
                     .toList(),
                 onChanged: (value) {
                   setState(() {
@@ -208,7 +210,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
           child: Text(
             'Guardar Foto',
             style: GoogleFonts.poppins(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
@@ -219,9 +224,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     return ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFFE91E63),
       foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     );
   }
 

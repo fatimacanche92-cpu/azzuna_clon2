@@ -31,18 +31,12 @@ final appRouter = GoRouter(
   initialLocation: '/login',
   routes: [
     // Routes that are outside of the shell
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginPage(),
-    ),
+    GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterPage(),
     ),
-     GoRoute(
-      path: '/welcome',
-      builder: (context, state) => const WelcomePage(),
-    ),
+    GoRoute(path: '/welcome', builder: (context, state) => const WelcomePage()),
     GoRoute(
       path: '/email-verification',
       builder: (context, state) {
@@ -50,10 +44,7 @@ final appRouter = GoRouter(
         return EmailVerificationPage(email: email);
       },
     ),
-     GoRoute(
-      path: '/profile',
-      builder: (context, state) => const ProfilePage(),
-    ),
+    GoRoute(path: '/profile', builder: (context, state) => const ProfilePage()),
     GoRoute(
       path: '/shipping-orders',
       builder: (context, state) => const ShippingOrdersPage(),
@@ -62,22 +53,19 @@ final appRouter = GoRouter(
       path: '/pickup-orders',
       builder: (context, state) => const PickupOrdersPage(),
     ),
-     GoRoute(
+    GoRoute(
       path: '/order-details',
       builder: (context, state) {
         final order = state.extra as OrderModel;
         return OrderDetailsPage(order: order);
       },
     ),
-     GoRoute(
-      path: '/drafts',
-      builder: (context, state) => const DraftsPage(),
-    ),
+    GoRoute(path: '/drafts', builder: (context, state) => const DraftsPage()),
     GoRoute(
       path: '/catalogs',
       builder: (context, state) => const CatalogsPage(),
     ),
-     GoRoute(
+    GoRoute(
       path: '/encargo',
       builder: (context, state) => const EncargoHomeScreen(),
       routes: [
@@ -89,13 +77,9 @@ final appRouter = GoRouter(
           path: 'entrega',
           builder: (context, state) => const EntregaScreen(),
         ),
-        GoRoute(
-          path: 'pago',
-          builder: (context, state) => const PagoScreen(),
-        ),
-      ]
+        GoRoute(path: 'pago', builder: (context, state) => const PagoScreen()),
+      ],
     ),
-
 
     // Shell route for main app navigation
     StatefulShellRoute.indexedStack(
@@ -106,13 +90,19 @@ final appRouter = GoRouter(
         // Branch for Home/Dashboard
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/home', builder: (context, state) => const HomePage()),
+            GoRoute(
+              path: '/home',
+              builder: (context, state) => const HomePage(),
+            ),
           ],
         ),
         // Branch for Orders
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/orders', builder: (context, state) => const OrdersListPage()),
+            GoRoute(
+              path: '/orders',
+              builder: (context, state) => const OrdersListPage(),
+            ),
           ],
         ),
         // Branch for Gallery
@@ -136,15 +126,16 @@ final appRouter = GoRouter(
         // Branch for Statistics
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/statistics', builder: (context, state) => const StatisticsPage()),
+            GoRoute(
+              path: '/statistics',
+              builder: (context, state) => const StatisticsPage(),
+            ),
           ],
         ),
       ],
     ),
   ],
   errorBuilder: (context, state) => Scaffold(
-    body: Center(
-      child: Text('Error: Ruta no encontrada ${state.error}'),
-    ),
+    body: Center(child: Text('Error: Ruta no encontrada ${state.error}')),
   ),
 );

@@ -48,5 +48,6 @@ class OrderModel with _$OrderModel {
     String? arrangementFlowerType,
   }) = _OrderModel;
 
-  factory OrderModel.fromJson(Map<String, dynamic> json) => _$OrderModelFromJson(json);
+  factory OrderModel.fromJson(Map<String, dynamic> json) =>
+      _$OrderModelFromJson(json);
 }

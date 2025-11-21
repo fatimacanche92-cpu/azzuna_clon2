@@ -36,10 +36,7 @@ class _WelcomePageState extends State<WelcomePage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.roseQuartz.withOpacity(0.5),
-              AppColors.blush,
-            ],
+            colors: [AppColors.roseQuartz.withOpacity(0.5), AppColors.blush],
           ),
         ),
         child: SafeArea(
@@ -50,7 +47,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 // Logo con brillitos
                 _buildLogo(),
                 const SizedBox(height: 32),
-                
+
                 // Mensaje de bienvenida
                 const Text(
                   '¡Bienvenido de nuevo!',
@@ -62,18 +59,15 @@ class _WelcomePageState extends State<WelcomePage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Email del usuario
                 Text(
                   email,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.white70,
-                  ),
+                  style: const TextStyle(fontSize: 16, color: Colors.white70),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),
-                
+
                 // Indicador de carga
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -127,10 +121,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.redWine,
-                          AppColors.blush,
-                        ],
+                        colors: [AppColors.redWine, AppColors.blush],
                       ),
                     ),
                     child: const Icon(
@@ -146,10 +137,18 @@ class _WelcomePageState extends State<WelcomePage> {
           // Brillitos blancos alrededor del logo
           ...List.generate(8, (index) {
             final radius = 55.0;
-            final x = 60 + radius * 0.8 * (index.isEven ? 1 : -1) * 
-                (index % 4 == 0 ? 0.6 : 1);
-            final y = 60 + radius * 0.8 * (index.isOdd ? 1 : -1) * 
-                (index % 4 == 1 ? 0.6 : 1);
+            final x =
+                60 +
+                radius *
+                    0.8 *
+                    (index.isEven ? 1 : -1) *
+                    (index % 4 == 0 ? 0.6 : 1);
+            final y =
+                60 +
+                radius *
+                    0.8 *
+                    (index.isOdd ? 1 : -1) *
+                    (index % 4 == 1 ? 0.6 : 1);
             return Positioned(
               left: x - 3,
               top: y - 3,

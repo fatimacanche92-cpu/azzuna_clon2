@@ -106,18 +106,22 @@ class _ShippingOrderItemState extends State<_ShippingOrderItem> {
       margin: const EdgeInsets.only(bottom: 16.0),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: _toggleExpanded,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildCardHeader(statusStyle),
-              _buildAnimatedDetails(),
-            ],
-          ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildCardHeader(statusStyle),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: _toggleExpanded,
+                child: Text(_isExpanded ? 'Ocultar detalles' : 'Ver detalles'),
+              ),
+            ),
+            _buildAnimatedDetails(),
+          ],
         ),
       ),
     );
@@ -129,10 +133,7 @@ class _ShippingOrderItemState extends State<_ShippingOrderItem> {
       children: [
         Text(
           'Pedido #${widget.order.id}',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         const SizedBox(height: 8),
         Text(
@@ -149,10 +150,7 @@ class _ShippingOrderItemState extends State<_ShippingOrderItem> {
           children: [
             Text(
               'Fecha: ${DateFormat.yMMMd().format(widget.order.scheduledDate)}',
-              style: GoogleFonts.poppins(
-                color: Colors.grey[600],
-                fontSize: 12,
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 12),
             ),
             Row(
               children: [
@@ -184,8 +182,9 @@ class _ShippingOrderItemState extends State<_ShippingOrderItem> {
     return AnimatedCrossFade(
       firstChild: const SizedBox(height: 16),
       secondChild: _buildDetailsView(),
-      crossFadeState:
-          _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+      crossFadeState: _isExpanded
+          ? CrossFadeState.showSecond
+          : CrossFadeState.showFirst,
       duration: const Duration(milliseconds: 200),
     );
   }
@@ -198,13 +197,31 @@ class _ShippingOrderItemState extends State<_ShippingOrderItem> {
         children: [
           const Divider(),
           const SizedBox(height: 8),
-          _buildDetailRow('Dirección', 'Calle Falsa 123, Colonia Inventada'), // Dummy data
-          _buildDetailRow('Teléfono', widget.order.clientPhone ?? 'No disponible'),
-          _buildDetailRow('Tipo de Flor', widget.order.arrangementFlowerType ?? 'No especificado'),
-          _buildDetailRow('Tamaño', widget.order.arrangementSize ?? 'No especificado'),
+          _buildDetailRow(
+            'Dirección',
+            'Calle Falsa 123, Colonia Inventada',
+          ), // Dummy data
+          _buildDetailRow(
+            'Teléfono',
+            widget.order.clientPhone ?? 'No disponible',
+          ),
+          _buildDetailRow(
+            'Tipo de Flor',
+            widget.order.arrangementFlowerType ?? 'No especificado',
+          ),
+          _buildDetailRow(
+            'Tamaño',
+            widget.order.arrangementSize ?? 'No especificado',
+          ),
           _buildDetailRow('Nota', widget.order.publicNote ?? 'Sin notas'),
-          _buildDetailRow('Precio', '\$${widget.order.price.toStringAsFixed(2)}'),
-          _buildDetailRow('Estado del Pago', widget.order.paymentStatus.toString().split('.').last),
+          _buildDetailRow(
+            'Precio',
+            '\$${widget.order.price.toStringAsFixed(2)}',
+          ),
+          _buildDetailRow(
+            'Estado del Pago',
+            widget.order.paymentStatus.toString().split('.').last,
+          ),
           _buildDetailRow('Info. Arreglo', widget.order.arrangementType),
         ],
       ),
@@ -221,12 +238,7 @@ class _ShippingOrderItemState extends State<_ShippingOrderItem> {
             '$label: ',
             style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: GoogleFonts.poppins(),
-            ),
-          ),
+          Expanded(child: Text(value, style: GoogleFonts.poppins())),
         ],
       ),
     );

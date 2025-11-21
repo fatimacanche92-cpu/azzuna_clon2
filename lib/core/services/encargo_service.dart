@@ -31,6 +31,7 @@ class EncargoStateNotifier extends StateNotifier<Encargo> {
 }
 
 // 2. Provider
-final encargoServiceProvider = StateNotifierProvider<EncargoStateNotifier, Encargo>((ref) {
-  return EncargoStateNotifier();
-});
+final encargoServiceProvider =
+    StateNotifierProvider<EncargoStateNotifier, Encargo>((ref) {
+      return EncargoStateNotifier();
+    });

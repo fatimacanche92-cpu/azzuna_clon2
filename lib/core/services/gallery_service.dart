@@ -29,7 +29,9 @@ class GalleryStateNotifier extends StateNotifier<List<Album>> {
     // Here, we'll save it to the app's documents directory to simulate persistence.
     final directory = await getApplicationDocumentsDirectory();
     final fileName = p.basename(image.path);
-    final savedImage = await File(image.path).copy('${directory.path}/$fileName');
+    final savedImage = await File(
+      image.path,
+    ).copy('${directory.path}/$fileName');
 
     state = [
       for (final album in state)
@@ -50,7 +52,9 @@ class GalleryStateNotifier extends StateNotifier<List<Album>> {
     state = [
       for (final album in state)
         if (album.id == albumId)
-          album.copyWith(photos: album.photos.where((p) => p != photoPath).toList())
+          album.copyWith(
+            photos: album.photos.where((p) => p != photoPath).toList(),
+          )
         else
           album,
     ];
@@ -58,9 +62,10 @@ class GalleryStateNotifier extends StateNotifier<List<Album>> {
 }
 
 // 2. Provider
-final galleryServiceProvider = StateNotifierProvider<GalleryStateNotifier, List<Album>>((ref) {
-  return GalleryStateNotifier();
-});
+final galleryServiceProvider =
+    StateNotifierProvider<GalleryStateNotifier, List<Album>>((ref) {
+      return GalleryStateNotifier();
+    });
 
 // 3. Helper providers
 final albumProvider = Provider.family<Album?, String>((ref, albumId) {

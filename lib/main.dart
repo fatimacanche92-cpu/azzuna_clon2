@@ -23,11 +23,7 @@ void main() async {
     debugPrint('Error al inicializar Supabase: $e');
   }
 
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
