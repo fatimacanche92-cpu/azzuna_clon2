@@ -2,15 +2,13 @@ import 'package:flutter/foundation.dart';
 
 enum DeliveryType { pasaPorEl, porEntrega }
 
-enum PaymentStatus { pagado }
-
 @immutable
 class Entrega {
   const Entrega({
     this.deliveryType,
     this.pickupName,
     this.pickupPhone,
-    this.paymentStatus,
+    this.email, // Added email
     this.deliveryAddress,
     this.recipientName,
     this.note,
@@ -19,7 +17,7 @@ class Entrega {
 
   // Common fields
   final DeliveryType? deliveryType;
-  final PaymentStatus? paymentStatus;
+  final String? email; // Added email
 
   // 'Pasa por él' fields
   final String? pickupName;
@@ -33,7 +31,7 @@ class Entrega {
 
   Entrega copyWith({
     DeliveryType? deliveryType,
-    PaymentStatus? paymentStatus,
+    String? email, // Added email
     String? pickupName,
     String? pickupPhone,
     String? deliveryAddress,
@@ -43,7 +41,7 @@ class Entrega {
   }) {
     return Entrega(
       deliveryType: deliveryType ?? this.deliveryType,
-      paymentStatus: paymentStatus ?? this.paymentStatus,
+      email: email ?? this.email, // Added email
       pickupName: pickupName ?? this.pickupName,
       pickupPhone: pickupPhone ?? this.pickupPhone,
       deliveryAddress: deliveryAddress ?? this.deliveryAddress,

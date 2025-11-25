@@ -15,7 +15,6 @@ class EntregaScreen extends ConsumerStatefulWidget {
 class _EntregaScreenState extends ConsumerState<EntregaScreen> {
   final _formKey = GlobalKey<FormState>();
   DeliveryType _deliveryType = DeliveryType.pasaPorEl;
-  PaymentStatus? _paymentStatus;
 
   final _pickupNameController = TextEditingController();
   final _pickupPhoneController = TextEditingController();
@@ -23,6 +22,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
   final _recipientNameController = TextEditingController();
   final _noteController = TextEditingController();
   final _remitenteController = TextEditingController();
+  final _emailController = TextEditingController(); // Added email controller
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
     final existing = ref.read(encargoServiceProvider).entrega;
     if (existing != null) {
       _deliveryType = existing.deliveryType ?? DeliveryType.pasaPorEl;
-      _paymentStatus = existing.paymentStatus;
+      _emailController.text = existing.email ?? ''; // Load email
       _pickupNameController.text = existing.pickupName ?? '';
       _pickupPhoneController.text = existing.pickupPhone ?? '';
       _deliveryAddressController.text = existing.deliveryAddress ?? '';
@@ -48,6 +48,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
     _recipientNameController.dispose();
     _noteController.dispose();
     _remitenteController.dispose();
+    _emailController.dispose(); // Dispose email controller
     super.dispose();
   }
 
@@ -58,7 +59,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
           : _remitenteController.text;
       final newEntrega = Entrega(
         deliveryType: _deliveryType,
-        paymentStatus: _paymentStatus,
+        email: _emailController.text, // Save email
         pickupName: _deliveryType == DeliveryType.pasaPorEl
             ? _pickupNameController.text
             : null,
@@ -127,6 +128,27 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
     );
   }
 
+  Widget _buildEmailField() {
+    return TextFormField(
+      controller: _emailController,
+      decoration: const InputDecoration(
+        labelText: 'Correo Electrónico de Contacto',
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Icons.email_outlined),
+      ),
+      keyboardType: TextInputType.emailAddress,
+      validator: (v) {
+        if (v == null || v.isEmpty) {
+          return 'El correo es obligatorio';
+        }
+        if (!v.contains('@') || !v.contains('.')) {
+          return 'Ingresa un correo válido';
+        }
+        return null;
+      },
+    );
+  }
+
   Widget _buildPickupForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,7 +177,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
               v!.length != 10 ? 'El teléfono debe tener 10 dígitos' : null,
         ),
         const SizedBox(height: 16),
-        _buildPaymentStatusDropdown(),
+        _buildEmailField(), // Added email field
       ],
     );
   }
@@ -190,7 +212,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        _buildPaymentStatusDropdown(),
+        _buildEmailField(), // Added email field
         const SizedBox(height: 24),
         Text('Nota', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
@@ -203,21 +225,6 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
           maxLines: 3,
         ),
       ],
-    );
-  }
-
-  Widget _buildPaymentStatusDropdown() {
-    return DropdownButtonFormField<PaymentStatus>(
-      value: _paymentStatus,
-      decoration: const InputDecoration(
-        labelText: 'Estado de pago',
-        border: OutlineInputBorder(),
-      ),
-      items: const [
-        DropdownMenuItem(value: PaymentStatus.pagado, child: Text('Pagado')),
-      ],
-      onChanged: (value) => setState(() => _paymentStatus = value),
-      validator: (v) => v == null ? 'Selecciona un estado de pago' : null,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_app/features/home/presentation/widgets/order_tracking_widget.dart';
+import 'package:flutter_app/features/orders/domain/models/order_model.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -16,6 +17,61 @@ class _HomePageState extends ConsumerState<HomePage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
+  // Dummy data copied from OrdersListPage to simulate a data source.
+  // In a real app, this would come from a Riverpod provider.
+  static final List<OrderModel> _allOrders = [
+    OrderModel(
+      id: '001',
+      clientName: 'Cliente Ejemplo 1',
+      arrangementType: 'Arreglo Floral',
+      scheduledDate: DateTime.now(),
+      deliveryType: OrderDeliveryType.envio,
+      shippingStatus: OrderShippingStatus.enEspera,
+      paymentStatus: OrderPaymentStatus.pagado,
+      price: 50.0,
+    ),
+    OrderModel(
+      id: '004',
+      clientName: 'Ana López',
+      arrangementType: 'Floral Grande',
+      scheduledDate: DateTime.now(),
+      deliveryType: OrderDeliveryType.recoger,
+      paymentStatus: OrderPaymentStatus.conAnticipo,
+      price: 650.0,
+      downPayment: 300.0,
+      remainingAmount: 350.0,
+    ),
+    OrderModel(
+      id: '002',
+      clientName: 'Cliente Ejemplo 2',
+      arrangementType: 'Ramo de Rosas',
+      scheduledDate: DateTime.now(),
+      deliveryType: OrderDeliveryType.envio,
+      shippingStatus: OrderShippingStatus.enCamino,
+      paymentStatus: OrderPaymentStatus.pagado,
+      price: 75.0,
+    ),
+    OrderModel(
+      id: '005',
+      clientName: 'Carlos Pérez',
+      arrangementType: 'Rosa Premium',
+      scheduledDate: DateTime.now().add(const Duration(days: 1)),
+      deliveryType: OrderDeliveryType.recoger,
+      paymentStatus: OrderPaymentStatus.pagado,
+      price: 420.0,
+    ),
+    OrderModel(
+      id: '003',
+      clientName: 'Cliente Ejemplo 3',
+      arrangementType: 'Caja de Girasoles',
+      scheduledDate: DateTime.now().subtract(const Duration(days: 1)),
+      deliveryType: OrderDeliveryType.envio,
+      shippingStatus: OrderShippingStatus.entregado,
+      paymentStatus: OrderPaymentStatus.pagado,
+      price: 60.0,
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -24,6 +80,10 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate the counts from the dummy data
+    final shippingOrdersCount = _allOrders.where((order) => order.deliveryType == OrderDeliveryType.envio).length;
+    final pickupOrdersCount = _allOrders.where((order) => order.deliveryType == OrderDeliveryType.recoger).length;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Azzuna'),
@@ -54,7 +114,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               children: [
                 Expanded(
                   child: _buildStatusCard(
-                    count: 12, // Placeholder
+                    count: shippingOrdersCount, // Use calculated count
                     title: 'Pedidos en envío',
                     onTap: () {
                       context.push('/shipping-orders');
@@ -64,7 +124,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildStatusCard(
-                    count: 8, // Placeholder
+                    count: pickupOrdersCount, // Use calculated count
                     title: 'Pedidos por recoger',
                     onTap: () {
                       context.push('/pickup-orders');
@@ -77,6 +137,10 @@ class _HomePageState extends ConsumerState<HomePage> {
 
             // 4. Today's Schedules
             _buildTodaySchedules(context),
+            const SizedBox(height: 24),
+
+            // New section for Opening Hours
+            _buildOpeningHours(context),
             const SizedBox(height: 24),
 
             // 5. Order Tracking
@@ -131,6 +195,55 @@ class _HomePageState extends ConsumerState<HomePage> {
             title: Text('Entrega a cliente', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
             subtitle: Text('10:30 AM', style: TextStyle(color: Colors.grey)),
             trailing: Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Method to build the new Opening Hours section
+  Widget _buildOpeningHours(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Horario de la Florería',
+          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          color: Theme.of(context).cardColor,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Lunes a Viernes', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                    Text('9:00 AM - 6:00 PM', style: GoogleFonts.poppins()),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Sábados', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                    Text('10:00 AM - 2:00 PM', style: GoogleFonts.poppins()),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Domingos', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                    Text('Cerrado', style: GoogleFonts.poppins(color: Colors.red.shade700)),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],
