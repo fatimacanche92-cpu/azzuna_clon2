@@ -95,81 +95,90 @@ class _OrderItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusStyle = _getStatusStyle(order);
-
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () => context.push('/order-details', extra: order),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: ExpansionTile(
+        title: _OrderSummary(order: order),
+        children: [_OrderDetails(order: order)],
+      ),
+    );
+  }
+}
+
+class _OrderSummary extends StatelessWidget {
+  const _OrderSummary({required this.order});
+
+  final OrderModel order;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusStyle = _getStatusStyle(order);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Pedido #${order.id}',
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  Icon(
-                    order.deliveryType == OrderDeliveryType.envio
-                        ? Icons.local_shipping_outlined
-                        : Icons.store_outlined,
-                    color: Colors.grey[700],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
               Text(
-                'Cliente: ${order.clientName}',
-                style: GoogleFonts.poppins(fontSize: 14),
+                'Pedido #${order.id}',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
-              Text(
-                'Arreglo: ${order.arrangementType}',
-                style: GoogleFonts.poppins(fontSize: 14),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Fecha: ${DateFormat.yMMMd().format(order.scheduledDate)}',
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: statusStyle['color'].withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      statusStyle['text']!,
-                      style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        color: statusStyle['color'],
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ],
+              Icon(
+                order.deliveryType == OrderDeliveryType.envio
+                    ? Icons.local_shipping_outlined
+                    : Icons.store_outlined,
+                color: Colors.grey[700],
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            'Cliente: ${order.clientName}',
+            style: GoogleFonts.poppins(fontSize: 14),
+          ),
+          Text(
+            'Arreglo: ${order.arrangementType}',
+            style: GoogleFonts.poppins(fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Fecha: ${DateFormat.yMMMd().format(order.scheduledDate)}',
+                style: GoogleFonts.poppins(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: statusStyle['color'].withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  statusStyle['text']!,
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600,
+                    color: statusStyle['color'],
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -187,8 +196,153 @@ class _OrderItem extends StatelessWidget {
           return {'color': Colors.grey, 'text': 'Desconocido'};
       }
     } else {
-      // Assuming 'recoger' status is based on payment or another field
       return {'color': Colors.purple, 'text': 'Por Recoger'};
     }
   }
+}
+
+class _OrderDetails extends StatelessWidget {
+  final OrderModel order;
+
+  const _OrderDetails({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    String paymentStatusText;
+    Color paymentStatusColor;
+
+    switch (order.paymentStatus) {
+      case OrderPaymentStatus.pagado:
+        paymentStatusText = 'Pagado';
+        paymentStatusColor = Colors.green;
+        break;
+      case OrderPaymentStatus.conAnticipo:
+        paymentStatusText = 'Con anticipo';
+        paymentStatusColor = Colors.orange;
+        break;
+      case OrderPaymentStatus.pendiente:
+        paymentStatusText = 'Pendiente';
+        paymentStatusColor = Colors.red;
+        break;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle('CLIENTE'),
+          _buildDetailRow('Nombre:', order.clientName),
+          if (order.clientPhone != null)
+            _buildDetailRow('Teléfono:', order.clientPhone!),
+          _buildDetailRow(
+            'Entrega:',
+            order.deliveryType == OrderDeliveryType.envio ? 'Envío' : 'Por recoger',
+          ),
+          _buildDetailRow(
+            'Fecha:',
+            DateFormat.yMMMd().format(order.scheduledDate),
+          ),
+          const SizedBox(height: 24),
+          _buildSectionTitle('ARREGLO'),
+          _buildDetailRow('Tipo:', order.arrangementType),
+          if (order.arrangementSize != null)
+            _buildDetailRow('Tamaño:', order.arrangementSize!),
+          if (order.arrangementColor != null)
+            _buildDetailRow('Color:', order.arrangementColor!),
+          if (order.arrangementFlowerType != null)
+            _buildDetailRow('Tipo de flor:', order.arrangementFlowerType!),
+          _buildDetailRow('Precio:', '\$${order.price.toStringAsFixed(2)}'),
+          const SizedBox(height: 24),
+          _buildSectionTitle('PAGO'),
+          _buildDetailRow(
+            'Estado:',
+            paymentStatusText,
+            valueColor: paymentStatusColor,
+          ),
+          if (order.paymentStatus == OrderPaymentStatus.conAnticipo) ...[
+            _buildDetailRow(
+              'Anticipo:',
+              '\$${order.downPayment!.toStringAsFixed(2)}',
+            ),
+            _buildDetailRow(
+              'Restante:',
+              '\$${order.remainingAmount!.toStringAsFixed(2)}',
+            ),
+          ],
+          const SizedBox(height: 24),
+          if (order.publicNote != null && order.publicNote!.isNotEmpty) ...[
+            _buildSectionTitle('NOTA'),
+            Text(order.publicNote!, style: GoogleFonts.poppins(fontSize: 14)),
+            const SizedBox(height: 24),
+          ],
+          if (order.deliveryType != OrderDeliveryType.envio)
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Handle "Marcar como Recogido" action
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purple,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  'Marcar como Recogido',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+Widget _buildSectionTitle(String title) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: Text(
+      title,
+      style: GoogleFonts.poppins(
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+        color: Colors.grey[700],
+      ),
+    ),
+  );
+}
+
+Widget _buildDetailRow(String label, String value, {Color? valueColor}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            value,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: valueColor ?? Colors.black87,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }

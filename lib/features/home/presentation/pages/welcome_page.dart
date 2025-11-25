@@ -110,7 +110,7 @@ class _WelcomePageState extends State<WelcomePage> {
             ),
             child: ClipOval(
               child: Image.asset(
-                'assets/icon.jpeg',
+                'assets/icon.png',
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,

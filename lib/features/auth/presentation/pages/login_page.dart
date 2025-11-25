@@ -105,7 +105,7 @@ class LoginPage extends ConsumerWidget {
             ),
             child: ClipOval(
               child: Image.asset(
-                'assets/icon.jpeg',
+                'assets/icon.png',
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
