@@ -57,6 +57,8 @@ dependencies:
   # Path Provider for file operations
   path_provider: ^2.1.3
   path: ^1.9.0
+  uuid: ^4.5.2
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

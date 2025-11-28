@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'app_router.dart'; // Import the new router
 import 'core/config/app_config.dart';
 import 'core/theme/theme.dart'; // Import new theme system
@@ -8,6 +9,9 @@ import 'shared/services/supabase_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize date formatting for Spanish locale
+  await initializeDateFormatting('es_ES', null);
 
   // Cargar variables de entorno
   try {

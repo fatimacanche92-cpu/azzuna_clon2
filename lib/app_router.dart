@@ -27,6 +27,14 @@ import 'features/settings/presentation/pages/perfil_general_screen.dart';
 import 'features/settings/presentation/pages/informacion_personal_screen.dart';
 import 'features/settings/presentation/pages/direcciones_guardadas_screen.dart';
 
+// New Customer Tracking Module
+import 'features/customer_tracking/presentation/screens/customer_tracking_screen.dart';
+import 'features/customer_tracking/presentation/screens/event_form_screen.dart';
+import 'features/customer_tracking/domain/customer_event.dart';
+
+// New Module
+import 'modules/seguimiento_inteligente/seguimiento_inteligente_view.dart';
+
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
@@ -82,6 +90,10 @@ final appRouter = GoRouter(
       builder: (context, state) => const CatalogsPage(),
     ),
     GoRoute(
+      path: '/intelligent-tracking',
+      builder: (context, state) => const SeguimientoInteligenteView(),
+    ),
+    GoRoute(
       path: '/encargo',
       builder: (context, state) => const EncargoHomeScreen(),
       routes: [
@@ -118,6 +130,28 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/orders',
               builder: (context, state) => const OrdersListPage(),
+            ),
+          ],
+        ),
+        // Branch for Customer Tracking
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/customer-tracking',
+              builder: (context, state) => const CustomerTrackingScreen(),
+              routes: [
+                GoRoute(
+                  path: 'add-event',
+                  builder: (context, state) => const EventFormScreen(),
+                ),
+                GoRoute(
+                  path: 'edit-event',
+                  builder: (context, state) {
+                    final event = state.extra as CustomerEvent?;
+                    return EventFormScreen(event: event);
+                  },
+                ),
+              ],
             ),
           ],
         ),

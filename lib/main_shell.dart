@@ -24,6 +24,10 @@ class MainShell extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
           BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'Pedidos'),
           BottomNavigationBarItem(
+            icon: Icon(Icons.group),
+            label: 'Seguimiento',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.camera_alt),
             label: 'Cámara',
           ),
