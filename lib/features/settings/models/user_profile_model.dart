@@ -15,6 +15,10 @@ class UserProfileModel with _$UserProfileModel {
     String? profilePicturePath, // New field for local path
     @Default([]) List<AddressModel> addresses,
     @Default(true) bool notificationsEnabled,
+    String? shop_address,
+    String? shop_hours,
+    String? shop_description,
+    Map<String, dynamic>? social_links,
   }) = _UserProfileModel;
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) => _$UserProfileModelFromJson(json);

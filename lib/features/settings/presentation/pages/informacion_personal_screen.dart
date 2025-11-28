@@ -21,6 +21,13 @@ class _InformacionPersonalScreenState
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
+  late TextEditingController _shopAddressController;
+  late TextEditingController _shopHoursController;
+  late TextEditingController _shopDescriptionController;
+  late TextEditingController _facebookController;
+  late TextEditingController _instagramController;
+  late TextEditingController _tiktokController;
+  late TextEditingController _whatsappController;
 
   @override
   void initState() {
@@ -29,6 +36,19 @@ class _InformacionPersonalScreenState
     _nameController = TextEditingController(text: profile?.name ?? '');
     _emailController = TextEditingController(text: profile?.email ?? '');
     _phoneController = TextEditingController(text: profile?.phone ?? '');
+    _shopAddressController =
+        TextEditingController(text: profile?.shop_address ?? '');
+    _shopHoursController = TextEditingController(text: profile?.shop_hours ?? '');
+    _shopDescriptionController =
+        TextEditingController(text: profile?.shop_description ?? '');
+    _facebookController =
+        TextEditingController(text: profile?.social_links?['facebook'] ?? '');
+    _instagramController =
+        TextEditingController(text: profile?.social_links?['instagram'] ?? '');
+    _tiktokController =
+        TextEditingController(text: profile?.social_links?['tiktok'] ?? '');
+    _whatsappController =
+        TextEditingController(text: profile?.social_links?['whatsapp'] ?? '');
   }
 
   @override
@@ -36,6 +56,13 @@ class _InformacionPersonalScreenState
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _shopAddressController.dispose();
+    _shopHoursController.dispose();
+    _shopDescriptionController.dispose();
+    _facebookController.dispose();
+    _instagramController.dispose();
+    _tiktokController.dispose();
+    _whatsappController.dispose();
     super.dispose();
   }
 
@@ -45,10 +72,20 @@ class _InformacionPersonalScreenState
       if (currentProfile != null) {
         final updatedProfile = currentProfile.copyWith(
           name: _nameController.text,
-          email: _emailController.text,
           phone: _phoneController.text,
+          shop_address: _shopAddressController.text,
+          shop_hours: _shopHoursController.text,
+          shop_description: _shopDescriptionController.text,
+          social_links: {
+            'facebook': _facebookController.text,
+            'instagram': _instagramController.text,
+            'tiktok': _tiktokController.text,
+            'whatsapp': _whatsappController.text,
+          },
         );
-        ref.read(profileNotifierProvider.notifier).updateUserProfile(updatedProfile);
+        ref
+            .read(profileNotifierProvider.notifier)
+            .updateUserProfile(updatedProfile);
         Navigator.of(context).pop();
       }
     }
@@ -77,7 +114,9 @@ class _InformacionPersonalScreenState
                       imagePath: profile.profilePicturePath,
                       radius: 70,
                       onEditPressed: () {
-                        ref.read(profileNotifierProvider.notifier).updateProfilePicture();
+                        ref
+                            .read(profileNotifierProvider.notifier)
+                            .updateProfilePicture();
                       },
                     ),
                     const SizedBox(height: 40),
@@ -106,11 +145,69 @@ class _InformacionPersonalScreenState
                         LengthLimitingTextInputFormatter(10),
                       ],
                       validator: (value) {
-                        if (value != null && value.isNotEmpty && value.length != 10) {
+                        if (value != null &&
+                            value.isNotEmpty &&
+                            value.length != 10) {
                           return 'El teléfono debe tener 10 dígitos';
                         }
                         return null;
                       },
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _shopAddressController,
+                      labelText: 'Dirección de la florería',
+                      icon: Icons.store_outlined,
+                      validator: (value) => value!.isEmpty
+                          ? 'La dirección no puede estar vacía'
+                          : null,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _shopHoursController,
+                      labelText: 'Horario de atención',
+                      icon: Icons.schedule_outlined,
+                      validator: (value) => value!.isEmpty
+                          ? 'El horario no puede estar vacío'
+                          : null,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _shopDescriptionController,
+                      labelText: 'Descripción del negocio',
+                      icon: Icons.description_outlined,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 40),
+                    Text('Redes Sociales',
+                        style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _facebookController,
+                      labelText: 'Facebook',
+                      icon: Icons.facebook,
+                      validator: _validateUrl,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _instagramController,
+                      labelText: 'Instagram',
+                      icon: Icons.camera_alt_outlined,
+                      validator: _validateUrl,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _tiktokController,
+                      labelText: 'TikTok',
+                      icon: Icons.music_note_outlined,
+                      validator: _validateUrl,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _whatsappController,
+                      labelText: 'WhatsApp',
+                      icon: Icons.wechat_outlined,
+                      validator: _validateUrl,
                     ),
                     const SizedBox(height: 40),
                     ButtonPrimary(
@@ -124,6 +221,18 @@ class _InformacionPersonalScreenState
     );
   }
 
+  String? _validateUrl(String? value) {
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+    final urlPattern = RegExp(
+        r'^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$');
+    if (!urlPattern.hasMatch(value)) {
+      return 'Por favor ingrese una URL válida';
+    }
+    return null;
+  }
+
   Widget _buildTextField({
     required TextEditingController controller,
     required String labelText,
@@ -132,6 +241,7 @@ class _InformacionPersonalScreenState
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
+    int? maxLines = 1,
   }) {
     return TextFormField(
       controller: controller,
@@ -139,6 +249,7 @@ class _InformacionPersonalScreenState
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
       validator: validator,
+      maxLines: maxLines,
       decoration: InputDecoration(
         labelText: labelText,
         prefixIcon: Icon(icon),
@@ -156,3 +267,4 @@ class _InformacionPersonalScreenState
     );
   }
 }
+

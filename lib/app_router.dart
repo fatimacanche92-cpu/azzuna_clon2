@@ -14,6 +14,7 @@ import 'features/gallery/album_screen.dart';
 import 'features/encargo/encargo_home.dart';
 import 'features/encargo/arreglo/arreglo_screen.dart';
 import 'features/encargo/entrega/entrega_screen.dart';
+import 'features/encargo/pago/pago_exitoso_screen.dart';
 import 'features/encargo/pago/pago_screen.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/register_page.dart';
@@ -106,6 +107,9 @@ final appRouter = GoRouter(
           builder: (context, state) => const EntregaScreen(),
         ),
         GoRoute(path: 'pago', builder: (context, state) => const PagoScreen()),
+        GoRoute(
+            path: 'pago-exitoso',
+            builder: (context, state) => const PagoExitosoScreen()),
       ],
     ),
 

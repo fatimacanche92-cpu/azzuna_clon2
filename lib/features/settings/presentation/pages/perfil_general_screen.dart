@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:go_router/go_router.dart'; // Import GoRouter
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/theme.dart';
 import '../providers/profile_provider.dart';
 import '../widgets/avatar_editable.dart';
@@ -33,12 +34,10 @@ class PerfilGeneralScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      // User Info
                       AvatarEditable(
                         imageUrl: profile.profilePictureUrl,
-                        imagePath: profile.profilePicturePath,
                         onEditPressed: () {
-                          ref.read(profileNotifierProvider.notifier).updateProfilePicture();
+                          context.go('/profile/informacion-personal');
                         },
                       ),
                       const SizedBox(height: 16),
@@ -58,19 +57,40 @@ class PerfilGeneralScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 32),
-
-                      // Sections
+                      ElevatedButton(
+                        onPressed: () {
+                          context.go('/profile/informacion-personal');
+                        },
+                        child: const Text('Editar Perfil'),
+                      ),
+                      const SizedBox(height: 32),
+                      _buildSectionCard(
+                        context,
+                        title: 'Florería',
+                        items: [
+                          if (profile.shop_address != null &&
+                              profile.shop_address!.isNotEmpty)
+                            _buildInfoItem(Icons.store_outlined,
+                                'Dirección', profile.shop_address!),
+                          if (profile.shop_hours != null &&
+                              profile.shop_hours!.isNotEmpty)
+                            _buildInfoItem(Icons.schedule_outlined,
+                                'Horario', profile.shop_hours!),
+                          if (profile.shop_description != null &&
+                              profile.shop_description!.isNotEmpty)
+                            _buildInfoItem(
+                                Icons.description_outlined,
+                                'Descripción',
+                                profile.shop_description!),
+                          if (profile.social_links != null)
+                            _buildSocialLinks(profile.social_links!),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
                       _buildSectionCard(
                         context,
                         title: 'Mi Cuenta',
                         items: [
-                          CardListItem(
-                            title: 'Información Personal',
-                            icon: Icons.person_outline,
-                            onTap: () {
-                              context.go('/profile/informacion-personal');
-                            },
-                          ),
                           CardListItem(
                             title: 'Direcciones Guardadas',
                             icon: Icons.location_on_outlined,
@@ -98,7 +118,9 @@ class PerfilGeneralScreen extends ConsumerWidget {
                             trailing: Switch(
                               value: profile.notificationsEnabled,
                               onChanged: (value) {
-                                ref.read(profileNotifierProvider.notifier).toggleNotifications(value);
+                                ref
+                                    .read(profileNotifierProvider.notifier)
+                                    .toggleNotifications(value);
                               },
                               activeColor: AppColors.redWine,
                             ),
@@ -123,13 +145,13 @@ class PerfilGeneralScreen extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 32),
-
-                      // Logout Button
                       TextButton.icon(
                         icon: const Icon(Icons.logout, color: AppColors.redWine),
                         label: Text(
                           'Cerrar sesión',
-                          style: GoogleFonts.poppins(color: AppColors.redWine, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.poppins(
+                              color: AppColors.redWine,
+                              fontWeight: FontWeight.bold),
                         ),
                         onPressed: () {
                           // ignore: avoid_print
@@ -139,6 +161,67 @@ class PerfilGeneralScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
+    );
+  }
+
+  Widget _buildInfoItem(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.grey[600], size: 20),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSocialLinks(Map<String, dynamic> links) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          if (links['facebook'] != null && links['facebook'].isNotEmpty)
+            _buildSocialIcon(Icons.facebook, links['facebook']),
+          if (links['instagram'] != null && links['instagram'].isNotEmpty)
+            _buildSocialIcon(Icons.camera_alt_outlined, links['instagram']),
+          if (links['tiktok'] != null && links['tiktok'].isNotEmpty)
+            _buildSocialIcon(Icons.music_note_outlined, links['tiktok']),
+          if (links['whatsapp'] != null && links['whatsapp'].isNotEmpty)
+            _buildSocialIcon(Icons.wechat_outlined, links['whatsapp']),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSocialIcon(IconData icon, String url) {
+    return IconButton(
+      icon: Icon(icon, color: AppColors.redWine, size: 30),
+      onPressed: () async {
+        final uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
+      },
     );
   }
 

@@ -39,7 +39,7 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Pedido completado (simulado)')),
     );
-    context.go('/'); // Navigate to home after completion
+    context.go('/encargo/pago-exitoso');
   }
 
   @override

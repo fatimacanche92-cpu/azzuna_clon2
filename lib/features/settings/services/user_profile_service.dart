@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../shared/services/supabase_service.dart';
@@ -31,10 +32,15 @@ class UserProfileService {
     if (user == null) {
       throw const AuthException('Not authenticated');
     }
+    
+    final profileJson = profile.toJson();
+    if (profile.social_links != null) {
+      profileJson['social_links'] = jsonEncode(profile.social_links);
+    }
 
     final response = await _client
         .from('profiles')
-        .update(profile.toJson())
+        .update(profileJson)
         .eq('id', user.id)
         .select()
         .single();
