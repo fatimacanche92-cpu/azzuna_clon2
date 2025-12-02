@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class PagoExitosoScreen extends StatelessWidget {
-  const PagoExitosoScreen({super.key});
+  final String? deliveryType; // 'envio' or 'recoger'
+
+  const PagoExitosoScreen({super.key, this.deliveryType});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,20 @@ class PagoExitosoScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
+              const SizedBox(height: 8),
+              if (deliveryType != null) ...[
+                ElevatedButton(
+                  onPressed: () {
+                    if (deliveryType == 'envio') {
+                      context.go('/shipping-orders');
+                    } else {
+                      context.go('/pickup-orders');
+                    }
+                  },
+                  child: const Text('Ver mi pedido'),
+                ),
+                const SizedBox(height: 8),
+              ],
               ElevatedButton(
                 onPressed: () {
                   context.go('/home');

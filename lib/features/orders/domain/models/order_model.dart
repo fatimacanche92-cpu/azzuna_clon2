@@ -36,6 +36,7 @@ class OrderModel with _$OrderModel {
     required String arrangementType,
     required DateTime scheduledDate,
     required OrderDeliveryType deliveryType,
+    String? deliveryAddress,
     OrderShippingStatus? shippingStatus,
     required OrderPaymentStatus paymentStatus,
     required double price,

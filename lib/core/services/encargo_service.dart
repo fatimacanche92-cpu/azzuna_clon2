@@ -67,11 +67,26 @@ class EncargoStateNotifier extends StateNotifier<Encargo> {
         computedPrice = (base + shipping).toDouble();
       }
 
+      String _sizeToWord(ArregloSize? s) {
+        switch (s) {
+          case ArregloSize.p:
+            return 'pequeño';
+          case ArregloSize.m:
+            return 'mediano';
+          case ArregloSize.g:
+            return 'grande';
+          case ArregloSize.eg:
+            return 'extra grande';
+          default:
+            return 'mediano';
+        }
+      }
+
       final orderData = {
         'user_id': user.id,
         'client_name': entrega.recipientName ?? entrega.pickupName ?? 'Cliente',
         'arrangement_type': arreglo.flowerType ?? 'Arreglo Floral',
-        'arrangement_size': arreglo.size?.toString() ?? 'M',
+        'arrangement_size': _sizeToWord(arreglo.size),
         'arrangement_color': arreglo.colors.isNotEmpty ? arreglo.colors.join(', ') : 'Mixtos',
         'arrangement_flower_type': arreglo.flowerType,
         'price': computedPrice,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../domain/models/order_model.dart';
 import '../providers/order_provider.dart';
 
@@ -171,10 +172,26 @@ class _ShippingOrderItemState extends State<_ShippingOrderItem> {
         children: [
           const Divider(),
           const SizedBox(height: 8),
-          _buildDetailRow(
-            'Dirección',
-            'Calle Falsa 123, Colonia Inventada',
-          ), // Dummy data
+          // Dirección real (si está disponible)
+          if (widget.order.deliveryAddress != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                children: [
+                  Expanded(child: Text(widget.order.deliveryAddress!)),
+                  IconButton(
+                    onPressed: () {
+                      final encoded = Uri.encodeComponent(widget.order.deliveryAddress!);
+                      final url = 'https://www.google.com/maps/search/?api=1&query=$encoded';
+                      launchUrlString(url);
+                    },
+                    icon: const Icon(Icons.map, color: Colors.blue),
+                  ),
+                ],
+              ),
+            )
+          else
+            _buildDetailRow('Dirección', 'No especificada'),
           _buildDetailRow(
             'Teléfono',
             widget.order.clientPhone ?? 'No disponible',

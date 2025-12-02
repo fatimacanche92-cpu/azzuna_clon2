@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_app/core/models/pago_model.dart';
 import 'package:flutter_app/core/models/arreglo_model.dart';
 import 'package:flutter_app/core/services/encargo_service.dart';
+import 'package:flutter_app/core/models/entrega_model.dart';
 import 'package:flutter_app/features/orders/presentation/providers/order_provider.dart';
 
 class PagoScreen extends ConsumerStatefulWidget {
@@ -82,6 +83,12 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
     );
     ref.read(encargoServiceProvider.notifier).updatePago(newPago);
     
+    // Determine delivery type string to pass to success screen
+    final entregaState = encargo.entrega;
+    final deliveryString = entregaState == null
+        ? null
+        : (entregaState.deliveryType == DeliveryType.pasaPorEl ? 'recoger' : 'envio');
+
     // Save the encargo to Supabase
     ref.read(encargoServiceProvider.notifier).saveEncargo().then((success) {
       if (success && mounted) {
@@ -96,8 +103,9 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
         );
         // Invalidate the orders provider to refresh the list
         ref.invalidate(allOrdersProvider);
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) context.go('/encargo/pago-exitoso');
+        // Close the encargo flow and return to home so the menu reflects the new counts
+        Future.delayed(const Duration(milliseconds: 400), () {
+          if (mounted) context.go('/home');
         });
       } else if (mounted) {
         ScaffoldMessenger.of(context).clearSnackBars();

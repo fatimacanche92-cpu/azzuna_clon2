@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../../domain/models/order_model.dart';
 import '../providers/order_provider.dart';
 
@@ -207,6 +208,23 @@ class _PickupOrderItemState extends State<_PickupOrderItem> {
           const Divider(thickness: 1, height: 24),
           _buildDetailRow('Teléfono', order.clientPhone ?? 'No proporcionado'),
           _buildDetailRow('Dirección', 'Por recoger en tienda'),
+          if (order.deliveryAddress != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                children: [
+                  Expanded(child: Text(order.deliveryAddress!)),
+                  IconButton(
+                    onPressed: () {
+                      final encoded = Uri.encodeComponent(order.deliveryAddress!);
+                      final url = 'https://www.google.com/maps/search/?api=1&query=$encoded';
+                      launchUrlString(url);
+                    },
+                    icon: const Icon(Icons.map, color: Colors.blue),
+                  ),
+                ],
+              ),
+            ),
           _buildDetailRow('Tipo de Entrega', 'Recoger en Tienda'),
           _buildDetailRow(
             'Tamaño Arreglo',

@@ -115,7 +115,10 @@ final appRouter = GoRouter(
         GoRoute(path: 'pago', builder: (context, state) => const PagoScreen()),
         GoRoute(
           path: 'pago-exitoso',
-          builder: (context, state) => const PagoExitosoScreen(),
+          builder: (context, state) {
+            final deliveryType = state.extra as String?;
+            return PagoExitosoScreen(deliveryType: deliveryType);
+          },
         ),
       ],
     ),

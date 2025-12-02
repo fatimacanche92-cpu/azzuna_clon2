@@ -70,7 +70,41 @@ class OrderService {
       final orders = data
           .map((json) {
             try {
-              return OrderModel.fromJson(json);
+              // Supabase returns snake_case keys; map them to the camelCase
+              // names expected by the generated `fromJson`.
+              final Map<String, dynamic> mapped = {
+                'id': json['id'],
+                'clientName': json['client_name'],
+                'arrangementType': json['arrangement_type'],
+                'scheduledDate': json['scheduled_date'],
+                'deliveryType': json['delivery_type'],
+                'shippingStatus': json['shipping_status'],
+                'paymentStatus': json['payment_status'],
+                'price': json['price'],
+                'downPayment': json['down_payment'],
+                'remainingAmount': json['remaining_amount'],
+                'publicNote': json['public_note'],
+                'clientPhone': json['client_phone'],
+                'arrangementSize': json['arrangement_size'],
+                'arrangementColor': json['arrangement_color'],
+                'arrangementFlowerType': json['arrangement_flower_type'],
+              };
+
+              // Normalize arrangementSize values saved previously like "ArregloSize.p" or single-letter codes
+              final sizeVal = mapped['arrangementSize'];
+              if (sizeVal is String) {
+                String normalized = sizeVal;
+                if (normalized.startsWith('ArregloSize.')) {
+                  normalized = normalized.split('.').last;
+                }
+                final sizeMap = {'p': 'pequeño', 'm': 'mediano', 'g': 'grande', 'eg': 'extra grande'};
+                if (sizeMap.containsKey(normalized)) {
+                  mapped['arrangementSize'] = sizeMap[normalized]!
+;
+                }
+              }
+
+              return OrderModel.fromJson(mapped);
             } catch (e) {
               print('Error parsing order: $json, error: $e');
               return null;

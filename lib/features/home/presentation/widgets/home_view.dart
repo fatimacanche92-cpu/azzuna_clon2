@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../orders/presentation/providers/order_provider.dart';
 
 /// Vista principal de inicio
-class HomeView extends StatelessWidget {
+class HomeView extends ConsumerWidget {
   const HomeView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final shipping = ref.watch(shippingOrdersProvider);
+    final pickup = ref.watch(pickupOrdersProvider);
+
+    final shippingCount = shipping.length;
+    final pickupCount = pickup.length;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -59,7 +68,40 @@ class HomeView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Estadísticas rápidas
+          // Sección Pedidos rápida (conteos por tipo)
+          const Text(
+            'Pedidos rápidos',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textDark,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildOrderCard(
+                  context: context,
+                  title: 'Por envío',
+                  count: shippingCount,
+                  onTap: () => GoRouter.of(context).go('/shipping-orders'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildOrderCard(
+                  context: context,
+                  title: 'Por recoger',
+                  count: pickupCount,
+                  onTap: () => GoRouter.of(context).go('/pickup-orders'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Estadísticas rápidas (mantener otras métricas si se desea)
           Row(
             children: [
               Expanded(
@@ -169,6 +211,71 @@ class HomeView extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildOrderCard({
+    required BuildContext context,
+    required String title,
+    required int count,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryMagenta,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    count.toString(),
+                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'Ver pedidos',
+                    style: TextStyle(fontSize: 14, color: AppColors.textLight),
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: AppColors.textLight),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
