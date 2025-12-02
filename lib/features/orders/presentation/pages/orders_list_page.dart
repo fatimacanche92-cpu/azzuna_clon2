@@ -159,10 +159,7 @@ class _OrderSummary extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: statusStyle['color'].withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -237,7 +234,9 @@ class _OrderDetails extends StatelessWidget {
             _buildDetailRow('Teléfono:', order.clientPhone!),
           _buildDetailRow(
             'Entrega:',
-            order.deliveryType == OrderDeliveryType.envio ? 'Envío' : 'Por recoger',
+            order.deliveryType == OrderDeliveryType.envio
+                ? 'Envío'
+                : 'Por recoger',
           ),
           _buildDetailRow(
             'Fecha:',
@@ -327,10 +326,7 @@ Widget _buildDetailRow(String label, String value, {Color? valueColor}) {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 14),
         ),
         const SizedBox(width: 8),
         Expanded(

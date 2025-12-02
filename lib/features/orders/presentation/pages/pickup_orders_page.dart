@@ -1,44 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/models/order_model.dart';
+import '../providers/order_provider.dart';
 
-class PickupOrdersPage extends StatelessWidget {
+class PickupOrdersPage extends ConsumerWidget {
   const PickupOrdersPage({super.key});
 
-  // Dummy data for demonstration
-  static final List<OrderModel> _pickupOrders = [
-    OrderModel(
-      id: '004',
-      clientName: 'Ana López',
-      arrangementType: 'Floral Grande',
-      arrangementSize: 'Grande',
-      arrangementColor: 'Azul + Blanco',
-      arrangementFlowerType: 'Rosas + Alstroemerias',
-      scheduledDate: DateTime.now(),
-      deliveryType: OrderDeliveryType.recoger,
-      paymentStatus: OrderPaymentStatus.conAnticipo,
-      price: 650.0,
-      downPayment: 300.0,
-      remainingAmount: 350.0,
-      publicNote: 'Para mamá',
-      clientPhone: '999-000-1111',
-    ),
-    OrderModel(
-      id: '005',
-      clientName: 'Carlos Pérez',
-      arrangementType: 'Rosa Premium',
-      scheduledDate: DateTime.now().add(const Duration(days: 1)),
-      deliveryType: OrderDeliveryType.recoger,
-      paymentStatus: OrderPaymentStatus.pagado,
-      price: 420.0,
-      publicNote: 'Entrega urgente',
-    ),
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pickupOrdersAsync = ref.watch(pickupOrdersProvider);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -53,29 +27,62 @@ class PickupOrdersPage extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 1,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: _pickupOrders.length,
-        itemBuilder: (context, index) {
-          final order = _pickupOrders[index];
-          return _PickupOrderItem(order: order);
-        },
-      ),
+      body: ref
+          .watch(allOrdersProvider)
+          .when(
+            data: (orders) {
+              final pickupOrders = orders
+                  .where(
+                    (order) => order.deliveryType == OrderDeliveryType.recoger,
+                  )
+                  .toList();
+
+              if (pickupOrders.isEmpty) {
+                return const Center(
+                  child: Text('No hay pedidos para recoger.'),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: pickupOrders.length,
+                itemBuilder: (context, index) {
+                  final order = pickupOrders[index];
+                  return _PickupOrderItem(order: order);
+                },
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) => Center(child: Text('Error: $error')),
+          ),
     );
   }
 }
 
-class _PickupOrderItem extends StatelessWidget {
+class _PickupOrderItem extends StatefulWidget {
   final OrderModel order;
 
   const _PickupOrderItem({required this.order});
+
+  @override
+  State<_PickupOrderItem> createState() => _PickupOrderItemState();
+}
+
+class _PickupOrderItemState extends State<_PickupOrderItem> {
+  bool _isExpanded = false;
+
+  void _toggleExpanded() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     String paymentStatusText;
     Color paymentStatusColor;
 
-    switch (order.paymentStatus) {
+    switch (widget.order.paymentStatus) {
       case OrderPaymentStatus.pagado:
         paymentStatusText = 'Pagado';
         paymentStatusColor = Colors.green;
@@ -99,8 +106,9 @@ class _PickupOrderItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // --- Card Header ---
             Text(
-              'Cliente: ${order.clientName}',
+              'Cliente: ${widget.order.clientName}',
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -108,11 +116,11 @@ class _PickupOrderItem extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Arreglo: ${order.arrangementType}',
+              'Arreglo: ${widget.order.arrangementType}',
               style: GoogleFonts.poppins(fontSize: 14),
             ),
             Text(
-              'Precio: \$${order.price.toStringAsFixed(2)}',
+              'Precio: \$${widget.order.price.toStringAsFixed(2)}',
               style: GoogleFonts.poppins(fontSize: 14),
             ),
             const SizedBox(height: 8),
@@ -131,11 +139,11 @@ class _PickupOrderItem extends StatelessWidget {
                 ),
               ],
             ),
-            if (order.paymentStatus == OrderPaymentStatus.conAnticipo)
+            if (widget.order.paymentStatus == OrderPaymentStatus.conAnticipo)
               Padding(
-                padding: const EdgeInsets.only(left: 8.0),
+                padding: const EdgeInsets.only(top: 4.0),
                 child: Text(
-                  '(\$${order.downPayment!.toStringAsFixed(2)} pagado, \$${order.remainingAmount!.toStringAsFixed(2)} pendiente)',
+                  '(Anticipo: \$${widget.order.downPayment!.toStringAsFixed(2)}, Restante: \$${widget.order.remainingAmount!.toStringAsFixed(2)})',
                   style: GoogleFonts.poppins(
                     color: Colors.grey[600],
                     fontSize: 12,
@@ -146,14 +154,77 @@ class _PickupOrderItem extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {
-                  context.push('/order-details', extra: order);
-                },
-                child: const Text('→ Ver detalles'),
+                onPressed: _toggleExpanded,
+                child: Text(_isExpanded ? 'Ocultar detalles' : 'Ver detalles'),
               ),
+            ),
+            // --- Animated Details ---
+            AnimatedCrossFade(
+              firstChild: Container(),
+              secondChild: _buildDetailsView(context),
+              crossFadeState: _isExpanded
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 300),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label: ',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: GoogleFonts.poppins(color: Colors.black54),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailsView(BuildContext context) {
+    final order = widget.order;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Divider(thickness: 1, height: 24),
+          _buildDetailRow('Teléfono', order.clientPhone ?? 'No proporcionado'),
+          _buildDetailRow('Dirección', 'Por recoger en tienda'),
+          _buildDetailRow('Tipo de Entrega', 'Recoger en Tienda'),
+          _buildDetailRow(
+            'Tamaño Arreglo',
+            order.arrangementSize ?? 'No especificado',
+          ),
+          _buildDetailRow('Color', order.arrangementColor ?? 'No especificado'),
+          _buildDetailRow(
+            'Tipo de Flor',
+            order.arrangementFlowerType ?? 'No especificado',
+          ),
+          _buildDetailRow(
+            'Nota',
+            (order.publicNote?.isNotEmpty ?? false)
+                ? order.publicNote!
+                : 'Sin nota',
+          ),
+          const SizedBox.shrink(), // Removed GiftCardGenerator from here
+        ],
       ),
     );
   }

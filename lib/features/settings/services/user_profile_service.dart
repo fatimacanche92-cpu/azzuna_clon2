@@ -22,8 +22,10 @@ class UserProfileService {
         .select()
         .eq('id', user.id)
         .single();
-    
+
     // Supabase returns a map, we need to convert it to our model
+    // ignore: avoid_print
+    print('Supabase profile response: $response');
     return UserProfileModel.fromJson(response);
   }
 
@@ -32,7 +34,7 @@ class UserProfileService {
     if (user == null) {
       throw const AuthException('Not authenticated');
     }
-    
+
     final profileJson = profile.toJson();
     if (profile.social_links != null) {
       profileJson['social_links'] = jsonEncode(profile.social_links);
@@ -44,7 +46,7 @@ class UserProfileService {
         .eq('id', user.id)
         .select()
         .single();
-    
+
     return UserProfileModel.fromJson(response);
   }
 
@@ -55,16 +57,21 @@ class UserProfileService {
     }
 
     final fileName = '${user.id}/profile.png';
-    await _client.storage.from('avatars').upload(
+    await _client.storage
+        .from('avatars')
+        .upload(
           fileName,
           file,
           fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
         );
-        
+
     final imageUrl = _client.storage.from('avatars').getPublicUrl(fileName);
-    
+
     // Update the profile_picture_url in the profiles table
-    await _client.from('profiles').update({'profile_picture_url': imageUrl}).eq('id', user.id);
+    await _client
+        .from('profiles')
+        .update({'profile_picture_url': imageUrl})
+        .eq('id', user.id);
 
     return imageUrl;
   }

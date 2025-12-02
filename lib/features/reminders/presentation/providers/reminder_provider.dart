@@ -44,12 +44,15 @@ class ReminderNotifier extends StateNotifier<ReminderState> {
   }
 
   List<ReminderModel> getRemindersForDay(DateTime day) {
-    return state.reminders.where((r) => 
-      !r.isCompleted && 
-      r.date.year == day.year && 
-      r.date.month == day.month && 
-      r.date.day == day.day
-    ).toList();
+    return state.reminders
+        .where(
+          (r) =>
+              !r.isCompleted &&
+              r.date.year == day.year &&
+              r.date.month == day.month &&
+              r.date.day == day.day,
+        )
+        .toList();
   }
 
   List<ReminderModel> getPendingReminders() {
@@ -80,7 +83,8 @@ class ReminderNotifier extends StateNotifier<ReminderState> {
   }
 }
 
-final reminderNotifierProvider = StateNotifierProvider<ReminderNotifier, ReminderState>((ref) {
-  final reminderService = ref.watch(reminderServiceProvider);
-  return ReminderNotifier(reminderService);
-});
+final reminderNotifierProvider =
+    StateNotifierProvider<ReminderNotifier, ReminderState>((ref) {
+      final reminderService = ref.watch(reminderServiceProvider);
+      return ReminderNotifier(reminderService);
+    });

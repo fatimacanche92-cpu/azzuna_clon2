@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_app/features/home/presentation/widgets/order_tracking_widget.dart';
+import 'package:flutter_app/features/home/presentation/widgets/order_status_animator.dart';
 import 'package:flutter_app/features/orders/domain/models/order_model.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -81,15 +81,19 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     // Calculate the counts from the dummy data
-    final shippingOrdersCount = _allOrders.where((order) => order.deliveryType == OrderDeliveryType.envio).length;
-    final pickupOrdersCount = _allOrders.where((order) => order.deliveryType == OrderDeliveryType.recoger).length;
+    final shippingOrdersCount = _allOrders
+        .where((order) => order.deliveryType == OrderDeliveryType.envio)
+        .length;
+    final pickupOrdersCount = _allOrders
+        .where((order) => order.deliveryType == OrderDeliveryType.recoger)
+        .length;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Azzuna'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.menu),
+            icon: const Icon(Icons.account_circle),
             onPressed: () {
               context.push('/profile');
             },
@@ -144,7 +148,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SizedBox(height: 24),
 
             // 5. Order Tracking
-            const OrderTrackingWidget(),
+            const OrderStatusAnimator(),
           ],
         ),
       ),
@@ -174,7 +178,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
     );
   }
-  
+
   // New placeholder method for "Horarios de Hoy"
   Widget _buildTodaySchedules(BuildContext context) {
     final theme = Theme.of(context);
@@ -189,12 +193,24 @@ class _HomePageState extends ConsumerState<HomePage> {
         // Example schedule card
         Card(
           elevation: 2, // Use elevation for shadow
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           color: theme.cardColor,
           child: const ListTile(
-            title: Text('Entrega a cliente', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
+            title: Text(
+              'Entrega a cliente',
+              style: TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             subtitle: Text('10:30 AM', style: TextStyle(color: Colors.grey)),
-            trailing: Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+            trailing: Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+              color: Colors.grey,
+            ),
           ),
         ),
       ],
@@ -213,7 +229,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         const SizedBox(height: 12),
         Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           color: Theme.of(context).cardColor,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -222,7 +240,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Lunes a Viernes', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                    Text(
+                      'Lunes a Viernes',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                    ),
                     Text('9:00 AM - 6:00 PM', style: GoogleFonts.poppins()),
                   ],
                 ),
@@ -230,7 +251,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Sábados', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                    Text(
+                      'Sábados',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                    ),
                     Text('10:00 AM - 2:00 PM', style: GoogleFonts.poppins()),
                   ],
                 ),
@@ -238,8 +262,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Domingos', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-                    Text('Cerrado', style: GoogleFonts.poppins(color: Colors.red.shade700)),
+                    Text(
+                      'Domingos',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      'Cerrado',
+                      style: GoogleFonts.poppins(color: Colors.red.shade700),
+                    ),
                   ],
                 ),
               ],
@@ -271,10 +301,13 @@ class _HomePageState extends ConsumerState<HomePage> {
         focusedDay: _focusedDay,
         calendarFormat: CalendarFormat.month,
         headerStyle: HeaderStyle(
-                    formatButtonVisible: false,
-                    titleCentered: true,
-                    titleTextStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                    headerPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          formatButtonVisible: false,
+          titleCentered: true,
+          titleTextStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          headerPadding: const EdgeInsets.symmetric(
+            vertical: 8.0,
+            horizontal: 16.0,
+          ),
         ),
         calendarStyle: CalendarStyle(
           todayDecoration: BoxDecoration(

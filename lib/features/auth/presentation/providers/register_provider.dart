@@ -67,11 +67,15 @@ class RegisterNotifier extends StateNotifier<RegisterState> {
       if (e.toString().contains('User already registered')) {
         errorMessage = 'Este correo electrónico ya está en uso.';
       } else if (e.toString().contains('weak_password')) {
-        errorMessage = 'La contraseña es demasiado débil. Intenta con una más segura.';
-      } else if (e.toString().contains('network') || e.toString().contains('Failed host lookup')) {
-        errorMessage = 'Error de red. Por favor, comprueba tu conexión a internet.';
+        errorMessage =
+            'La contraseña es demasiado débil. Intenta con una más segura.';
+      } else if (e.toString().contains('network') ||
+          e.toString().contains('Failed host lookup')) {
+        errorMessage =
+            'Error de red. Por favor, comprueba tu conexión a internet.';
       } else {
-        errorMessage = 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.';
+        errorMessage =
+            'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.';
       }
 
       state = state.copyWith(isLoading: false, error: errorMessage);

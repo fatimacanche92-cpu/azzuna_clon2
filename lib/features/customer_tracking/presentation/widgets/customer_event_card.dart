@@ -21,7 +21,9 @@ class CustomerEventCard extends ConsumerWidget {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Confirmar Eliminación'),
-            content: const Text('¿Estás seguro de que quieres eliminar este evento?'),
+            content: const Text(
+              '¿Estás seguro de que quieres eliminar este evento?',
+            ),
             actions: <Widget>[
               TextButton(
                 child: const Text('Cancelar'),
@@ -30,7 +32,9 @@ class CustomerEventCard extends ConsumerWidget {
               TextButton(
                 child: const Text('Eliminar'),
                 onPressed: () {
-                  ref.read(customerTrackingNotifierProvider.notifier).deleteEvent(event.id);
+                  ref
+                      .read(customerTrackingNotifierProvider.notifier)
+                      .deleteEvent(event.id);
                   Navigator.of(context).pop();
                 },
               ),
@@ -40,10 +44,12 @@ class CustomerEventCard extends ConsumerWidget {
       );
     }
   }
-  
+
   void _shareToWhatsApp(String message, String? phone) async {
     if (phone == null || phone.isEmpty) return;
-    final url = Uri.parse("https://wa.me/$phone?text=${Uri.encodeComponent(message)}");
+    final url = Uri.parse(
+      "https://wa.me/$phone?text=${Uri.encodeComponent(message)}",
+    );
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
@@ -59,7 +65,9 @@ class CustomerEventCard extends ConsumerWidget {
 
     AIRecommendation? recommendation;
     if (daysUntil >= 3 && daysUntil <= 7) {
-      recommendation = AIRecommendationService.generateRecommendation(event.eventType, event.clientName);
+      recommendation = AIRecommendationService.generateRecommendation(
+        event.eventType,
+                                event.clientName ?? '',      );
     }
 
     return Card(
@@ -79,7 +87,7 @@ class CustomerEventCard extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        event.clientName,
+                        event.clientName ?? '',
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: theme.primaryColor,
@@ -89,16 +97,27 @@ class CustomerEventCard extends ConsumerWidget {
                     ),
                     PopupMenuButton<String>(
                       onSelected: (value) => _onSelected(context, ref, value),
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                        const PopupMenuItem<String>(value: 'edit', child: Text('Editar evento')),
-                        const PopupMenuItem<String>(value: 'delete', child: Text('Eliminar evento')),
-                      ],
+                      itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<String>>[
+                            const PopupMenuItem<String>(
+                              value: 'edit',
+                              child: Text('Editar evento'),
+                            ),
+                            const PopupMenuItem<String>(
+                              value: 'delete',
+                              child: Text('Eliminar evento'),
+                            ),
+                          ],
                       icon: Icon(Icons.more_vert, color: theme.primaryColor),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                _buildInfoRow(Icons.phone, event.clientPhone ?? 'No disponible', theme),
+                _buildInfoRow(
+                  Icons.phone,
+                  event.clientPhone ?? 'No disponible',
+                  theme,
+                ),
                 const SizedBox(height: 4),
                 _buildInfoRow(
                   Icons.calendar_today,
@@ -106,8 +125,12 @@ class CustomerEventCard extends ConsumerWidget {
                   theme,
                 ),
                 const SizedBox(height: 4),
-                if(daysUntil > 0)
-                  _buildInfoRow(Icons.timelapse, 'Próximo en $daysUntil días', theme),
+                if (daysUntil > 0)
+                  _buildInfoRow(
+                    Icons.timelapse,
+                    'Próximo en $daysUntil días',
+                    theme,
+                  ),
                 const SizedBox(height: 12),
                 _buildLastPurchaseInfo(theme),
               ],
@@ -119,8 +142,11 @@ class CustomerEventCard extends ConsumerWidget {
       ),
     );
   }
-  
-  Widget _buildRecommendationSection(AIRecommendation recommendation, ThemeData theme) {
+
+  Widget _buildRecommendationSection(
+    AIRecommendation recommendation,
+    ThemeData theme,
+  ) {
     return Container(
       color: theme.primaryColor.withOpacity(0.15),
       padding: const EdgeInsets.all(16.0),
@@ -141,14 +167,19 @@ class CustomerEventCard extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text('"'
-'${recommendation.suggestedMessage}'
-'"'),
+          Text(
+            '"'
+            '${recommendation.suggestedMessage}'
+            '"',
+          ),
           const SizedBox(height: 8),
           Text.rich(
             TextSpan(
               children: [
-                const TextSpan(text: 'Ramo sugerido: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                const TextSpan(
+                  text: 'Ramo sugerido: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 TextSpan(text: recommendation.suggestedBouquet),
               ],
             ),
@@ -156,7 +187,10 @@ class CustomerEventCard extends ConsumerWidget {
           Text.rich(
             TextSpan(
               children: [
-                const TextSpan(text: 'Color: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                const TextSpan(
+                  text: 'Color: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 TextSpan(text: recommendation.suggestedColor),
               ],
             ),
@@ -165,7 +199,10 @@ class CustomerEventCard extends ConsumerWidget {
           Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton.icon(
-              onPressed: () => _shareToWhatsApp(recommendation.suggestedMessage, event.clientPhone),
+              onPressed: () => _shareToWhatsApp(
+                recommendation.suggestedMessage,
+                event.clientPhone,
+              ),
               icon: const Icon(Icons.share, size: 16),
               label: const Text('Compartir'),
               style: ElevatedButton.styleFrom(
@@ -173,7 +210,7 @@ class CustomerEventCard extends ConsumerWidget {
                 foregroundColor: Colors.white,
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -184,12 +221,7 @@ class CustomerEventCard extends ConsumerWidget {
       children: [
         Icon(icon, size: 16, color: theme.primaryColor.withOpacity(0.7)),
         const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: theme.textTheme.bodyMedium,
-          ),
-        ),
+        Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),
       ],
     );
   }

@@ -52,7 +52,9 @@ class AddressService {
     await Future.delayed(const Duration(milliseconds: 300));
     final currentDefault = _addresses.indexWhere((a) => a.isDefault);
     if (currentDefault != -1) {
-      _addresses[currentDefault] = _addresses[currentDefault].copyWith(isDefault: false);
+      _addresses[currentDefault] = _addresses[currentDefault].copyWith(
+        isDefault: false,
+      );
     }
     final newDefault = _addresses.indexWhere((a) => a.id == addressId);
     if (newDefault != -1) {

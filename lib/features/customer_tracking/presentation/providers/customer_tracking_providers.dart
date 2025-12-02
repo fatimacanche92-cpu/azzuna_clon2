@@ -5,9 +5,11 @@ import 'package:flutter_app/features/customer_tracking/domain/customer_tracking_
 import 'package:flutter_app/features/customer_tracking/domain/customer_event.dart';
 
 // Provider for the CustomerTrackingRepository implementation
-final customerTrackingRepositoryProvider = Provider<CustomerTrackingRepository>((ref) {
-  return CustomerTrackingRepositoryImpl();
-});
+final customerTrackingRepositoryProvider = Provider<CustomerTrackingRepository>(
+  (ref) {
+    return CustomerTrackingRepositoryImpl();
+  },
+);
 
 // 1. State Definition
 class CustomerTrackingState extends Equatable {
@@ -41,7 +43,8 @@ class CustomerTrackingState extends Equatable {
 class CustomerTrackingNotifier extends StateNotifier<CustomerTrackingState> {
   final CustomerTrackingRepository _repository;
 
-  CustomerTrackingNotifier(this._repository) : super(const CustomerTrackingState()) {
+  CustomerTrackingNotifier(this._repository)
+    : super(const CustomerTrackingState()) {
     loadEvents();
   }
 
@@ -51,7 +54,10 @@ class CustomerTrackingNotifier extends StateNotifier<CustomerTrackingState> {
       final events = await _repository.getCustomerEvents();
       state = state.copyWith(isLoading: false, events: events);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: 'Failed to load events: ${e.toString()}');
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Failed to load events: ${e.toString()}',
+      );
     }
   }
 
@@ -61,7 +67,9 @@ class CustomerTrackingNotifier extends StateNotifier<CustomerTrackingState> {
       await loadEvents();
       return true;
     } catch (e) {
-      state = state.copyWith(errorMessage: 'Failed to add event: ${e.toString()}');
+      state = state.copyWith(
+        errorMessage: 'Failed to add event: ${e.toString()}',
+      );
       return false;
     }
   }
@@ -72,25 +80,32 @@ class CustomerTrackingNotifier extends StateNotifier<CustomerTrackingState> {
       await loadEvents();
       return true;
     } catch (e) {
-      state = state.copyWith(errorMessage: 'Failed to update event: ${e.toString()}');
+      state = state.copyWith(
+        errorMessage: 'Failed to update event: ${e.toString()}',
+      );
       return false;
     }
   }
-  
+
   Future<bool> deleteEvent(String eventId) async {
     try {
       await _repository.deleteCustomerEvent(eventId);
       await loadEvents();
       return true;
     } catch (e) {
-      state = state.copyWith(errorMessage: 'Failed to delete event: ${e.toString()}');
+      state = state.copyWith(
+        errorMessage: 'Failed to delete event: ${e.toString()}',
+      );
       return false;
     }
   }
 }
 
 // 3. Provider for the Notifier
-final customerTrackingNotifierProvider = StateNotifierProvider<CustomerTrackingNotifier, CustomerTrackingState>((ref) {
-  final repository = ref.watch(customerTrackingRepositoryProvider);
-  return CustomerTrackingNotifier(repository);
-});
+final customerTrackingNotifierProvider =
+    StateNotifierProvider<CustomerTrackingNotifier, CustomerTrackingState>((
+      ref,
+    ) {
+      final repository = ref.watch(customerTrackingRepositoryProvider);
+      return CustomerTrackingNotifier(repository);
+    });

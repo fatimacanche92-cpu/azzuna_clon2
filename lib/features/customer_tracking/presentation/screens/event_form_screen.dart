@@ -68,7 +68,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     if (_formKey.currentState!.validate()) {
       if (_selectedDate == null || _selectedEventType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor, selecciona fecha y tipo de evento.')),
+          const SnackBar(
+            content: Text('Por favor, selecciona fecha y tipo de evento.'),
+          ),
         );
         return;
       }
@@ -86,6 +88,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         notes: _notesController.text,
         createdAt: isEditing ? widget.event!.createdAt : DateTime.now(),
         updatedAt: DateTime.now(),
+        status: isEditing ? widget.event!.status : 'active',
       );
 
       bool success;
@@ -94,7 +97,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       } else {
         success = await notifier.addEvent(event);
       }
-      
+
       if (success && mounted) {
         Navigator.of(context).pop();
       } else if (mounted) {
@@ -124,26 +127,36 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nombre del Cliente'),
+                decoration: const InputDecoration(
+                  labelText: 'Nombre del Cliente',
+                ),
                 validator: (value) =>
                     value!.isEmpty ? 'El nombre no puede estar vacío' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Teléfono del Cliente (Opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Teléfono del Cliente (Opcional)',
+                ),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedEventType,
                 hint: const Text('Tipo de Evento'),
-                items: _eventTypes.map((type) => DropdownMenuItem(
-                  value: type,
-                  child: Text(type[0].toUpperCase() + type.substring(1)),
-                )).toList(),
-                onChanged: (value) => setState(() => _selectedEventType = value),
-                validator: (value) => value == null ? 'Selecciona un tipo' : null,
+                items: _eventTypes
+                    .map(
+                      (type) => DropdownMenuItem(
+                        value: type,
+                        child: Text(type[0].toUpperCase() + type.substring(1)),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedEventType = value),
+                validator: (value) =>
+                    value == null ? 'Selecciona un tipo' : null,
               ),
               const SizedBox(height: 16),
               Row(
@@ -164,7 +177,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(labelText: 'Notas (Opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Notas (Opcional)',
+                ),
                 maxLines: 3,
               ),
               const SizedBox(height: 32),
@@ -174,7 +189,10 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                   backgroundColor: theme.primaryColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: Text(isEditing ? 'Guardar Cambios' : 'Crear Evento', style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  isEditing ? 'Guardar Cambios' : 'Crear Evento',
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

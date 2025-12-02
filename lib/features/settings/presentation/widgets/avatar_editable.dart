@@ -35,11 +35,7 @@ class AvatarEditable extends ConsumerWidget {
           backgroundColor: AppColors.roseQuartz,
           backgroundImage: backgroundImage,
           child: (backgroundImage == null)
-              ? Icon(
-                  Icons.person,
-                  size: radius,
-                  color: Colors.white,
-                )
+              ? Icon(Icons.person, size: radius, color: Colors.white)
               : null,
         ),
         SizedBox(

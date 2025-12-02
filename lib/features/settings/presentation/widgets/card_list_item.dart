@@ -24,10 +24,7 @@ class CardListItem extends StatelessWidget {
       leading: Icon(icon, color: iconColor ?? AppColors.redWine),
       title: Text(
         title,
-        style: GoogleFonts.poppins(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
+        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       trailing: trailing ?? const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,

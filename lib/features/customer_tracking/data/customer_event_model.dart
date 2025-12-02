@@ -4,28 +4,30 @@ class CustomerEventModel extends CustomerEvent {
   CustomerEventModel({
     required super.id,
     required super.userId,
-    required super.clientName,
-    super.clientPhone,
     required super.eventType,
     required super.eventDate,
     super.notes,
-    super.lastPurchaseReference,
     required super.createdAt,
-    required super.updatedAt,
+    super.updatedAt,
+    required super.status,
+    super.clientName,
+    super.clientPhone,
+    super.lastPurchaseReference,
   });
 
   factory CustomerEventModel.fromJson(Map<String, dynamic> json) {
     return CustomerEventModel(
       id: json['id'],
       userId: json['user_id'],
-      clientName: json['client_name'],
-      clientPhone: json['client_phone'],
       eventType: json['event_type'],
       eventDate: DateTime.parse(json['event_date']),
       notes: json['notes'],
-      lastPurchaseReference: json['last_purchase_reference'],
       createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      status: json['status'],
+      clientName: json['client_name'],
+      clientPhone: json['client_phone'],
+      lastPurchaseReference: json['last_purchase_reference'],
     );
   }
 
@@ -33,24 +35,28 @@ class CustomerEventModel extends CustomerEvent {
     return {
       'id': id,
       'user_id': userId,
-      'client_name': clientName,
-      'client_phone': clientPhone,
       'event_type': eventType,
       'event_date': eventDate.toIso8601String(),
       'notes': notes,
+      'status': status,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+      'client_name': clientName,
+      'client_phone': clientPhone,
       'last_purchase_reference': lastPurchaseReference,
     };
   }
-  
+
   Map<String, dynamic> toJsonForInsert() {
-    // Exclude id, createdAt, updatedAt as they are handled by the database.
+    // Exclude id, createdAt as they are handled by the database.
     return {
       'user_id': userId,
-      'client_name': clientName,
-      'client_phone': clientPhone,
       'event_type': eventType,
       'event_date': eventDate.toIso8601String(),
       'notes': notes,
+      'status': status,
+      'client_name': clientName,
+      'client_phone': clientPhone,
       'last_purchase_reference': lastPurchaseReference,
     };
   }
@@ -58,11 +64,12 @@ class CustomerEventModel extends CustomerEvent {
   Map<String, dynamic> toJsonForUpdate() {
     // Exclude id, user_id, createdAt as they should not be updated.
     return {
-      'client_name': clientName,
-      'client_phone': clientPhone,
       'event_type': eventType,
       'event_date': eventDate.toIso8601String(),
       'notes': notes,
+      'status': status,
+      'client_name': clientName,
+      'client_phone': clientPhone,
       'last_purchase_reference': lastPurchaseReference,
     };
   }

@@ -31,7 +31,9 @@ class AddressCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  address.name.toLowerCase() == 'casa' ? Icons.home : Icons.work,
+                  address.name.toLowerCase() == 'casa'
+                      ? Icons.home
+                      : Icons.work,
                   color: AppColors.redWine,
                 ),
                 const SizedBox(width: 12),
@@ -50,21 +52,22 @@ class AddressCard extends StatelessWidget {
                     if (value == 'delete') onDelete();
                     if (value == 'setDefault') onSetDefault();
                   },
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
-                      value: 'edit',
-                      child: Text('Editar'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'delete',
-                      child: Text('Eliminar'),
-                    ),
-                    if (!address.isDefault)
-                      const PopupMenuItem<String>(
-                        value: 'setDefault',
-                        child: Text('Marcar como predeterminada'),
-                      ),
-                  ],
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
+                        const PopupMenuItem<String>(
+                          value: 'edit',
+                          child: Text('Editar'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Text('Eliminar'),
+                        ),
+                        if (!address.isDefault)
+                          const PopupMenuItem<String>(
+                            value: 'setDefault',
+                            child: Text('Marcar como predeterminada'),
+                          ),
+                      ],
                 ),
               ],
             ),
@@ -87,7 +90,7 @@ class AddressCard extends StatelessWidget {
                 backgroundColor: AppColors.blush,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
               ),
-            ]
+            ],
           ],
         ),
       ),

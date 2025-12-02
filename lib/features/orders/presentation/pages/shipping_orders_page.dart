@@ -1,59 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../domain/models/order_model.dart';
+import '../providers/order_provider.dart';
 
-class ShippingOrdersPage extends StatelessWidget {
+class ShippingOrdersPage extends ConsumerWidget {
   const ShippingOrdersPage({super.key});
 
-  // Dummy data for demonstration
-  static final List<OrderModel> _shippingOrders = [
-    OrderModel(
-      id: '001',
-      clientName: 'Cliente Ejemplo 1',
-      arrangementType: 'Arreglo Floral',
-      scheduledDate: DateTime.now(),
-      deliveryType: OrderDeliveryType.envio,
-      shippingStatus: OrderShippingStatus.enEspera,
-      paymentStatus: OrderPaymentStatus.pagado,
-      price: 50.0,
-      clientPhone: '555-123-4567',
-      arrangementFlowerType: 'Rosas',
-      arrangementSize: 'Mediano',
-      publicNote: 'Entregar en recepción.',
-    ),
-    OrderModel(
-      id: '002',
-      clientName: 'Cliente Ejemplo 2',
-      arrangementType: 'Ramo de Rosas',
-      scheduledDate: DateTime.now(),
-      deliveryType: OrderDeliveryType.envio,
-      shippingStatus: OrderShippingStatus.enCamino,
-      paymentStatus: OrderPaymentStatus.pagado,
-      price: 75.0,
-      clientPhone: '555-987-6543',
-      arrangementFlowerType: 'Rosas',
-      arrangementSize: 'Grande',
-      publicNote: 'Llamar al llegar.',
-    ),
-    OrderModel(
-      id: '003',
-      clientName: 'Cliente Ejemplo 3',
-      arrangementType: 'Caja de Girasoles',
-      scheduledDate: DateTime.now().subtract(const Duration(days: 1)),
-      deliveryType: OrderDeliveryType.envio,
-      shippingStatus: OrderShippingStatus.entregado,
-      paymentStatus: OrderPaymentStatus.pagado,
-      price: 60.0,
-      clientPhone: '555-555-5555',
-      arrangementFlowerType: 'Girasoles',
-      arrangementSize: 'Chico',
-      publicNote: 'Dejar en la puerta.',
-    ),
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -68,14 +24,32 @@ class ShippingOrdersPage extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 1,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: _shippingOrders.length,
-        itemBuilder: (context, index) {
-          final order = _shippingOrders[index];
-          return _ShippingOrderItem(order: order);
-        },
-      ),
+      body: ref
+          .watch(allOrdersProvider)
+          .when(
+            data: (orders) {
+              final shippingOrders = orders
+                  .where(
+                    (order) => order.deliveryType == OrderDeliveryType.envio,
+                  )
+                  .toList();
+
+              if (shippingOrders.isEmpty) {
+                return const Center(child: Text('No hay pedidos para enviar.'));
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: shippingOrders.length,
+                itemBuilder: (context, index) {
+                  final order = shippingOrders[index];
+                  return _ShippingOrderItem(order: order);
+                },
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) => Center(child: Text('Error: $error')),
+          ),
     );
   }
 }

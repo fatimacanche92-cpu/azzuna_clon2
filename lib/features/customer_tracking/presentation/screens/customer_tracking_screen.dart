@@ -20,7 +20,8 @@ class CustomerTrackingScreen extends ConsumerWidget {
         elevation: 0,
       ),
       body: RefreshIndicator(
-        onRefresh: () => ref.read(customerTrackingNotifierProvider.notifier).loadEvents(),
+        onRefresh: () =>
+            ref.read(customerTrackingNotifierProvider.notifier).loadEvents(),
         child: _buildBody(context, state),
       ),
       floatingActionButton: FloatingActionButton(
@@ -58,9 +59,13 @@ class CustomerTrackingScreen extends ConsumerWidget {
     // Separate events into sections
     final now = DateTime.now();
     final upcomingEvents = state.events
-        .where((e) => e.eventDate.isAfter(now) && e.eventDate.difference(now).inDays <= 30)
+        .where(
+          (e) =>
+              e.eventDate.isAfter(now) &&
+              e.eventDate.difference(now).inDays <= 30,
+        )
         .toList();
-    
+
     final otherEvents = state.events
         .where((e) => !upcomingEvents.contains(e))
         .toList();
@@ -74,7 +79,7 @@ class CustomerTrackingScreen extends ConsumerWidget {
         if (otherEvents.isNotEmpty)
           _buildSectionHeader('Todos los eventos', context),
         ...otherEvents.map((event) => CustomerEventCard(event: event)),
-        
+
         const SizedBox(height: 80), // Space for FAB
       ],
     );

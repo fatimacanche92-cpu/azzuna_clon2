@@ -18,12 +18,14 @@ import 'features/encargo/pago/pago_exitoso_screen.dart';
 import 'features/encargo/pago/pago_screen.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/register_page.dart';
+import 'features/auth/presentation/pages/forgot_password_page.dart';
 import 'features/auth/presentation/pages/email_verification_page.dart';
 import 'features/home/presentation/pages/welcome_page.dart';
 
 import 'features/drafts/presentation/pages/drafts_page.dart';
 import 'features/catalogs/presentation/pages/catalogs_page.dart';
 import 'features/statistics/presentation/pages/statistics_page.dart';
+import 'features/settings/presentation/pages/profile_page.dart';
 import 'features/settings/presentation/pages/perfil_general_screen.dart';
 import 'features/settings/presentation/pages/informacion_personal_screen.dart';
 import 'features/settings/presentation/pages/direcciones_guardadas_screen.dart';
@@ -45,6 +47,10 @@ final appRouter = GoRouter(
     // Routes that are outside of the shell
     GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
     GoRoute(
+      path: '/forgot-password',
+      builder: (context, state) => const ForgotPasswordPage(),
+    ),
+    GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterPage(),
     ),
@@ -58,7 +64,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/profile',
-      builder: (context, state) => const PerfilGeneralScreen(),
+      builder: (context, state) => const ProfilePage(),
       routes: [
         GoRoute(
           path: 'informacion-personal',
@@ -108,8 +114,9 @@ final appRouter = GoRouter(
         ),
         GoRoute(path: 'pago', builder: (context, state) => const PagoScreen()),
         GoRoute(
-            path: 'pago-exitoso',
-            builder: (context, state) => const PagoExitosoScreen()),
+          path: 'pago-exitoso',
+          builder: (context, state) => const PagoExitosoScreen(),
+        ),
       ],
     ),
 

@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/encargo_model.dart';
 import '../models/arreglo_model.dart';
@@ -20,6 +21,10 @@ class EncargoStateNotifier extends StateNotifier<Encargo> {
     state = state.copyWith(pago: pago);
   }
 
+  void updateCardData(Uint8List? cardData) {
+    state = state.copyWith(cardData: cardData);
+  }
+
   void resetEncargo() {
     state = const Encargo();
   }
@@ -28,6 +33,7 @@ class EncargoStateNotifier extends StateNotifier<Encargo> {
   Arreglo? get arreglo => state.arreglo;
   Entrega? get entrega => state.entrega;
   Pago? get pago => state.pago;
+  Uint8List? get cardData => state.cardData;
 }
 
 // 2. Provider

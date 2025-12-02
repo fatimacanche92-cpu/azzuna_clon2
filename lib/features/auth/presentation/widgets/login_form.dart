@@ -167,7 +167,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
           // Link de olvidé mi contraseña
           TextButton(
             onPressed: () {
-              // TODO: Implementar recuperación de contraseña
+              context.push('/forgot-password');
             },
             child: const Text(
               '¿Olvidaste tu contraseña?',

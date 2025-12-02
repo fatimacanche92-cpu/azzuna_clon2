@@ -51,6 +51,14 @@ class MenuDrawer extends StatelessWidget {
               context.push('/encargo');
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.psychology_outlined),
+            title: const Text('Seguimiento Inteligente'),
+            onTap: () {
+              context.pop();
+              context.push('/intelligent-tracking');
+            },
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.settings_outlined),

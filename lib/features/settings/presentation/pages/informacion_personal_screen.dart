@@ -36,19 +36,27 @@ class _InformacionPersonalScreenState
     _nameController = TextEditingController(text: profile?.name ?? '');
     _emailController = TextEditingController(text: profile?.email ?? '');
     _phoneController = TextEditingController(text: profile?.phone ?? '');
-    _shopAddressController =
-        TextEditingController(text: profile?.shop_address ?? '');
-    _shopHoursController = TextEditingController(text: profile?.shop_hours ?? '');
-    _shopDescriptionController =
-        TextEditingController(text: profile?.shop_description ?? '');
-    _facebookController =
-        TextEditingController(text: profile?.social_links?['facebook'] ?? '');
-    _instagramController =
-        TextEditingController(text: profile?.social_links?['instagram'] ?? '');
-    _tiktokController =
-        TextEditingController(text: profile?.social_links?['tiktok'] ?? '');
-    _whatsappController =
-        TextEditingController(text: profile?.social_links?['whatsapp'] ?? '');
+    _shopAddressController = TextEditingController(
+      text: profile?.shop_address ?? '',
+    );
+    _shopHoursController = TextEditingController(
+      text: profile?.shop_hours ?? '',
+    );
+    _shopDescriptionController = TextEditingController(
+      text: profile?.shop_description ?? '',
+    );
+    _facebookController = TextEditingController(
+      text: profile?.social_links?['facebook'] ?? '',
+    );
+    _instagramController = TextEditingController(
+      text: profile?.social_links?['instagram'] ?? '',
+    );
+    _tiktokController = TextEditingController(
+      text: profile?.social_links?['tiktok'] ?? '',
+    );
+    _whatsappController = TextEditingController(
+      text: profile?.social_links?['whatsapp'] ?? '',
+    );
   }
 
   @override
@@ -124,8 +132,9 @@ class _InformacionPersonalScreenState
                       controller: _nameController,
                       labelText: 'Nombre Completo',
                       icon: Icons.person_outline,
-                      validator: (value) =>
-                          value!.isEmpty ? 'El nombre no puede estar vacío' : null,
+                      validator: (value) => value!.isEmpty
+                          ? 'El nombre no puede estar vacío'
+                          : null,
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
@@ -179,8 +188,10 @@ class _InformacionPersonalScreenState
                       maxLines: 3,
                     ),
                     const SizedBox(height: 40),
-                    Text('Redes Sociales',
-                        style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      'Redes Sociales',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 20),
                     _buildTextField(
                       controller: _facebookController,
@@ -226,7 +237,8 @@ class _InformacionPersonalScreenState
       return null;
     }
     final urlPattern = RegExp(
-        r'^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$');
+      r'^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$',
+    );
     if (!urlPattern.hasMatch(value)) {
       return 'Por favor ingrese una URL válida';
     }
@@ -267,4 +279,3 @@ class _InformacionPersonalScreenState
     );
   }
 }
-

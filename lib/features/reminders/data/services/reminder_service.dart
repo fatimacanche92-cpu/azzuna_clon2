@@ -33,12 +33,16 @@ class ReminderService {
 
   Future<List<ReminderModel>> getReminders() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return List.from(_reminders); // Return a copy to prevent external modification
+    return List.from(
+      _reminders,
+    ); // Return a copy to prevent external modification
   }
 
   Future<void> addReminder(ReminderModel reminder) async {
     await Future.delayed(const Duration(milliseconds: 200));
-    final newReminder = reminder.copyWith(id: Random().nextInt(100000).toString());
+    final newReminder = reminder.copyWith(
+      id: Random().nextInt(100000).toString(),
+    );
     _reminders.add(newReminder);
   }
 

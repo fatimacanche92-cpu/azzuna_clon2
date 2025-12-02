@@ -22,25 +22,29 @@ class DireccionesGuardadasScreen extends ConsumerWidget {
       body: addressState.isLoading
           ? const Center(child: CircularProgressIndicator())
           : addressState.addresses.isEmpty
-              ? Center(
-                  child: Text(
-                    'No tienes direcciones guardadas.',
-                    style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: addressState.addresses.length,
-                  itemBuilder: (context, index) {
-                    final address = addressState.addresses[index];
-                    return AddressCard(
-                      address: address,
-                      onEdit: () => _showAddressForm(context, ref, address),
-                      onDelete: () => ref.read(addressNotifierProvider.notifier).deleteAddress(address.id),
-                      onSetDefault: () => ref.read(addressNotifierProvider.notifier).setDefaultAddress(address.id),
-                    );
-                  },
-                ),
+          ? Center(
+              child: Text(
+                'No tienes direcciones guardadas.',
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: addressState.addresses.length,
+              itemBuilder: (context, index) {
+                final address = addressState.addresses[index];
+                return AddressCard(
+                  address: address,
+                  onEdit: () => _showAddressForm(context, ref, address),
+                  onDelete: () => ref
+                      .read(addressNotifierProvider.notifier)
+                      .deleteAddress(address.id),
+                  onSetDefault: () => ref
+                      .read(addressNotifierProvider.notifier)
+                      .setDefaultAddress(address.id),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddressForm(context, ref, null),
         backgroundColor: AppColors.redWine,
@@ -49,7 +53,11 @@ class DireccionesGuardadasScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddressForm(BuildContext context, WidgetRef ref, AddressModel? address) {
+  void _showAddressForm(
+    BuildContext context,
+    WidgetRef ref,
+    AddressModel? address,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -58,8 +66,10 @@ class DireccionesGuardadasScreen extends ConsumerWidget {
         initialChildSize: 0.8,
         maxChildSize: 0.9,
         minChildSize: 0.5,
-        builder: (context, scrollController) =>
-            AddEditAddressForm(address: address, scrollController: scrollController),
+        builder: (context, scrollController) => AddEditAddressForm(
+          address: address,
+          scrollController: scrollController,
+        ),
       ),
     );
   }
@@ -69,7 +79,11 @@ class AddEditAddressForm extends ConsumerStatefulWidget {
   final AddressModel? address;
   final ScrollController scrollController;
 
-  const AddEditAddressForm({Key? key, this.address, required this.scrollController}) : super(key: key);
+  const AddEditAddressForm({
+    Key? key,
+    this.address,
+    required this.scrollController,
+  }) : super(key: key);
 
   @override
   _AddEditAddressFormState createState() => _AddEditAddressFormState();
@@ -87,12 +101,14 @@ class _AddEditAddressFormState extends ConsumerState<AddEditAddressForm> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.address?.name ?? '');
-    _fullAddressController = TextEditingController(text: widget.address?.fullAddress ?? '');
+    _fullAddressController = TextEditingController(
+      text: widget.address?.fullAddress ?? '',
+    );
     _cityController = TextEditingController(text: widget.address?.city ?? '');
     _stateController = TextEditingController(text: widget.address?.state ?? '');
     _zipController = TextEditingController(text: widget.address?.zipCode ?? '');
   }
-  
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -129,7 +145,7 @@ class _AddEditAddressFormState extends ConsumerState<AddEditAddressForm> {
     final isEditing = widget.address != null;
 
     return Container(
-       decoration: const BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.oatMilk,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -144,44 +160,69 @@ class _AddEditAddressFormState extends ConsumerState<AddEditAddressForm> {
           children: [
             Text(
               isEditing ? 'Editar Dirección' : 'Nueva Dirección',
-              style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
+              style: GoogleFonts.poppins(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            _buildTextField(controller: _nameController, labelText: 'Nombre (ej. Casa, Oficina)'),
+            _buildTextField(
+              controller: _nameController,
+              labelText: 'Nombre (ej. Casa, Oficina)',
+            ),
             const SizedBox(height: 16),
-            _buildTextField(controller: _fullAddressController, labelText: 'Dirección Completa'),
+            _buildTextField(
+              controller: _fullAddressController,
+              labelText: 'Dirección Completa',
+            ),
             const SizedBox(height: 16),
             _buildTextField(controller: _cityController, labelText: 'Ciudad'),
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: _buildTextField(controller: _stateController, labelText: 'Estado')),
+                Expanded(
+                  child: _buildTextField(
+                    controller: _stateController,
+                    labelText: 'Estado',
+                  ),
+                ),
                 const SizedBox(width: 16),
-                Expanded(child: _buildTextField(controller: _zipController, labelText: 'Código Postal', keyboardType: TextInputType.number)),
+                Expanded(
+                  child: _buildTextField(
+                    controller: _zipController,
+                    labelText: 'Código Postal',
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 32),
-            ButtonPrimary(
-              text: 'Guardar Dirección',
-              onPressed: _saveAddress,
-            ),
+            ButtonPrimary(text: 'Guardar Dirección', onPressed: _saveAddress),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String labelText, TextInputType? keyboardType}) {
-     return TextFormField(
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    TextInputType? keyboardType,
+  }) {
+    return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      validator: (value) => value!.isEmpty ? 'Este campo no puede estar vacío' : null,
+      validator: (value) =>
+          value!.isEmpty ? 'Este campo no puede estar vacío' : null,
       decoration: InputDecoration(
         labelText: labelText,
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
       ),
     );
   }

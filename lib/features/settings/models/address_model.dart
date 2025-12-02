@@ -15,5 +15,6 @@ class AddressModel with _$AddressModel {
     @Default(false) bool isDefault,
   }) = _AddressModel;
 
-  factory AddressModel.fromJson(Map<String, dynamic> json) => _$AddressModelFromJson(json);
+  factory AddressModel.fromJson(Map<String, dynamic> json) =>
+      _$AddressModelFromJson(json);
 }

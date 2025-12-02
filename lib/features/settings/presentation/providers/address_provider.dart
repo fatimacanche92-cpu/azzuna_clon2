@@ -7,11 +7,7 @@ class AddressState {
   final bool isLoading;
   final String? error;
 
-  AddressState({
-    this.addresses = const [],
-    this.isLoading = false,
-    this.error,
-  });
+  AddressState({this.addresses = const [], this.isLoading = false, this.error});
 
   AddressState copyWith({
     List<AddressModel>? addresses,
@@ -84,7 +80,8 @@ class AddressNotifier extends StateNotifier<AddressState> {
   }
 }
 
-final addressNotifierProvider = StateNotifierProvider<AddressNotifier, AddressState>((ref) {
-  final addressService = ref.watch(addressServiceProvider);
-  return AddressNotifier(addressService);
-});
+final addressNotifierProvider =
+    StateNotifierProvider<AddressNotifier, AddressState>((ref) {
+      final addressService = ref.watch(addressServiceProvider);
+      return AddressNotifier(addressService);
+    });

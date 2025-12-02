@@ -8,16 +8,19 @@ class CustomerTrackingRepositoryImpl implements CustomerTrackingRepository {
   final SupabaseClient _supabaseClient;
 
   CustomerTrackingRepositoryImpl({SupabaseClient? supabaseClient})
-      : _supabaseClient = supabaseClient ?? SupabaseService.client;
+    : _supabaseClient = supabaseClient ?? SupabaseService.client;
 
   @override
   Future<List<CustomerEvent>> getCustomerEvents() async {
     try {
       final response = await _supabaseClient
-          .from('customer_events')
+          .from('reminders')
           .select()
           .order('event_date', ascending: true);
-      
+
+      // ignore: avoid_print
+      print('Supabase customer events response: $response');
+
       final events = (response as List)
           .map((data) => CustomerEventModel.fromJson(data))
           .toList();
@@ -43,9 +46,12 @@ class CustomerTrackingRepositoryImpl implements CustomerTrackingRepository {
         lastPurchaseReference: event.lastPurchaseReference,
         createdAt: DateTime.now(), // Handled by DB default
         updatedAt: DateTime.now(), // Handled by DB default/trigger
+        status: event.status,
       );
 
-      await _supabaseClient.from('customer_events').insert(model.toJsonForInsert());
+      await _supabaseClient
+          .from('reminders')
+          .insert(model.toJsonForInsert());
     } catch (e) {
       print('Error adding customer event: $e');
       rethrow;
@@ -55,7 +61,7 @@ class CustomerTrackingRepositoryImpl implements CustomerTrackingRepository {
   @override
   Future<void> updateCustomerEvent(CustomerEvent event) async {
     try {
-       final model = CustomerEventModel(
+      final model = CustomerEventModel(
         id: event.id,
         userId: event.userId,
         clientName: event.clientName,
@@ -66,10 +72,11 @@ class CustomerTrackingRepositoryImpl implements CustomerTrackingRepository {
         lastPurchaseReference: event.lastPurchaseReference,
         createdAt: event.createdAt,
         updatedAt: event.updatedAt,
+        status: event.status,
       );
 
       await _supabaseClient
-          .from('customer_events')
+          .from('reminders')
           .update(model.toJsonForUpdate())
           .eq('id', event.id);
     } catch (e) {
@@ -81,10 +88,7 @@ class CustomerTrackingRepositoryImpl implements CustomerTrackingRepository {
   @override
   Future<void> deleteCustomerEvent(String eventId) async {
     try {
-      await _supabaseClient
-          .from('customer_events')
-          .delete()
-          .eq('id', eventId);
+      await _supabaseClient.from('reminders').delete().eq('id', eventId);
     } catch (e) {
       print('Error deleting customer event: $e');
       rethrow;

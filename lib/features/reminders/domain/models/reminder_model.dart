@@ -12,5 +12,6 @@ class ReminderModel with _$ReminderModel {
     @Default(false) bool isCompleted,
   }) = _ReminderModel;
 
-  factory ReminderModel.fromJson(Map<String, dynamic> json) => _$ReminderModelFromJson(json);
+  factory ReminderModel.fromJson(Map<String, dynamic> json) =>
+      _$ReminderModelFromJson(json);
 }

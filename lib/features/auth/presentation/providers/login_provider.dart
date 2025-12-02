@@ -69,13 +69,17 @@ class LoginNotifier extends StateNotifier<LoginState> {
       if (e.toString().contains('Invalid login credentials')) {
         errorMessage = 'Correo o contraseña incorrectos.';
       } else if (e.toString().contains('Email not confirmed')) {
-        errorMessage = 'Por favor, confirma tu correo electrónico para continuar.';
-      } else if (e.toString().contains('network') || e.toString().contains('Failed host lookup')) {
-        errorMessage = 'Error de red. Por favor, comprueba tu conexión a internet.';
+        errorMessage =
+            'Por favor, confirma tu correo electrónico para continuar.';
+      } else if (e.toString().contains('network') ||
+          e.toString().contains('Failed host lookup')) {
+        errorMessage =
+            'Error de red. Por favor, comprueba tu conexión a internet.';
       } else {
-        errorMessage = 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.';
+        errorMessage =
+            'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.';
       }
-      
+
       state = state.copyWith(isLoading: false, error: errorMessage);
     }
   }

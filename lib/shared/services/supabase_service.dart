@@ -35,4 +35,14 @@ class SupabaseService {
 
   /// Verifica si hay un usuario autenticado
   static bool get isAuthenticated => currentUser != null;
+
+  /// Cierra la sesión del usuario
+  static Future<void> signOut() async {
+    try {
+      await client.auth.signOut();
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error al cerrar sesión: $e');
+    }
+  }
 }
