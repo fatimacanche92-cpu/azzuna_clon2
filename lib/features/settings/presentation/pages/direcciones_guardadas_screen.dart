@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/theme.dart';
 import '../providers/address_provider.dart';
 import '../widgets/address_card.dart';
+import '../widgets/address_map_widget.dart';
 import '../../models/address_model.dart';
 import '../widgets/button_primary.dart';
 
@@ -30,18 +31,36 @@ class DireccionesGuardadasScreen extends ConsumerWidget {
             )
           : ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: addressState.addresses.length,
+              itemCount: addressState.addresses.length * 2, // Double for map+card
               itemBuilder: (context, index) {
-                final address = addressState.addresses[index];
-                return AddressCard(
-                  address: address,
-                  onEdit: () => _showAddressForm(context, ref, address),
-                  onDelete: () => ref
-                      .read(addressNotifierProvider.notifier)
-                      .deleteAddress(address.id),
-                  onSetDefault: () => ref
-                      .read(addressNotifierProvider.notifier)
-                      .setDefaultAddress(address.id),
+                // Alternate between address cards and maps
+                final addressIndex = index ~/ 2;
+                final isMap = index % 2 == 1;
+                
+                final address = addressState.addresses[addressIndex];
+                
+                if (isMap) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: AddressMapWidget(
+                      address: address,
+                      height: 180,
+                    ),
+                  );
+                }
+                
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: AddressCard(
+                    address: address,
+                    onEdit: () => _showAddressForm(context, ref, address),
+                    onDelete: () => ref
+                        .read(addressNotifierProvider.notifier)
+                        .deleteAddress(address.id),
+                    onSetDefault: () => ref
+                        .read(addressNotifierProvider.notifier)
+                        .setDefaultAddress(address.id),
+                  ),
                 );
               },
             ),

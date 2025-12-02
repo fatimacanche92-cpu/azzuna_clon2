@@ -74,12 +74,21 @@ class _InformacionPersonalScreenState
     super.dispose();
   }
 
-  void _saveChanges() {
+  void _saveChanges() async {
     if (_formKey.currentState!.validate()) {
       final currentProfile = ref.read(profileNotifierProvider).profile;
       if (currentProfile != null) {
+        // Show loading indicator
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Guardando cambios...'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
         final updatedProfile = currentProfile.copyWith(
           name: _nameController.text,
+          email: currentProfile.email,
           phone: _phoneController.text,
           shop_address: _shopAddressController.text,
           shop_hours: _shopHoursController.text,
@@ -91,10 +100,33 @@ class _InformacionPersonalScreenState
             'whatsapp': _whatsappController.text,
           },
         );
-        ref
-            .read(profileNotifierProvider.notifier)
-            .updateUserProfile(updatedProfile);
-        Navigator.of(context).pop();
+        
+        try {
+          await ref
+              .read(profileNotifierProvider.notifier)
+              .updateUserProfile(updatedProfile);
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('✓ Cambios guardados exitosamente'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
+            Navigator.of(context).pop();
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error al guardar: $e'),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+        }
       }
     }
   }
@@ -146,18 +178,21 @@ class _InformacionPersonalScreenState
                     const SizedBox(height: 20),
                     _buildTextField(
                       controller: _phoneController,
-                      labelText: 'Teléfono',
+                      labelText: 'Teléfono (10 dígitos)',
                       icon: Icons.phone_outlined,
-                      keyboardType: TextInputType.phone,
+                      keyboardType: TextInputType.number,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                         LengthLimitingTextInputFormatter(10),
                       ],
                       validator: (value) {
-                        if (value != null &&
-                            value.isNotEmpty &&
-                            value.length != 10) {
-                          return 'El teléfono debe tener 10 dígitos';
+                        if (value != null && value.isNotEmpty) {
+                          if (value.length != 10) {
+                            return 'El teléfono debe tener exactamente 10 dígitos';
+                          }
+                          if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
+                            return 'Solo se permiten números';
+                          }
                         }
                         return null;
                       },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_app/features/customer_tracking/domain/customer_event.dart';
 import 'package:flutter_app/features/customer_tracking/presentation/providers/customer_tracking_providers.dart';
@@ -70,10 +71,19 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Por favor, selecciona fecha y tipo de evento.'),
+            backgroundColor: Colors.red,
           ),
         );
         return;
       }
+
+      // Show loading
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Guardando evento...'),
+          duration: Duration(seconds: 2),
+        ),
+      );
 
       final notifier = ref.read(customerTrackingNotifierProvider.notifier);
       final isEditing = widget.event != null;
@@ -92,18 +102,43 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       );
 
       bool success;
-      if (isEditing) {
-        success = await notifier.updateEvent(event);
-      } else {
-        success = await notifier.addEvent(event);
-      }
+      try {
+        if (isEditing) {
+          success = await notifier.updateEvent(event);
+        } else {
+          success = await notifier.addEvent(event);
+        }
 
-      if (success && mounted) {
-        Navigator.of(context).pop();
-      } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al guardar el evento.')),
-        );
+        if (success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(isEditing ? 'Evento actualizado' : 'Evento creado exitosamente'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) Navigator.of(context).pop();
+          });
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error al guardar el evento. Intenta de nuevo.'),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $e'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
       }
     }
   }
@@ -137,9 +172,13 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
               TextFormField(
                 controller: _phoneController,
                 decoration: const InputDecoration(
-                  labelText: 'Teléfono del Cliente (Opcional)',
+                  labelText: 'Teléfono del Cliente (Opcional, 10 dígitos)',
                 ),
-                keyboardType: TextInputType.phone,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(

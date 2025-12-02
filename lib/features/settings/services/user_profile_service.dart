@@ -56,24 +56,68 @@ class UserProfileService {
       throw const AuthException('Not authenticated');
     }
 
-    final fileName = '${user.id}/profile.png';
-    await _client.storage
-        .from('avatars')
-        .upload(
-          fileName,
-          file,
-          fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
-        );
+    try {
+      print('Starting profile picture upload for user: ${user.id}');
 
-    final imageUrl = _client.storage.from('avatars').getPublicUrl(fileName);
+      final fileName = '${user.id}/profile.png';
 
-    // Update the profile_picture_url in the profiles table
-    await _client
-        .from('profiles')
-        .update({'profile_picture_url': imageUrl})
-        .eq('id', user.id);
+      // Verify bucket exists by attempting a lightweight list; if it fails, surface a clearer error
+      try {
+        await _client.storage.from('avatars').list();
+      } catch (bucketErr) {
+        print('Bucket "avatars" not accessible or does not exist: $bucketErr');
+        throw Exception('Storage bucket "avatars" not available.');
+      }
 
-    return imageUrl;
+      // Retry upload with exponential backoff
+      const int maxAttempts = 3;
+      int attempt = 0;
+      dynamic uploadResponse;
+      while (attempt < maxAttempts) {
+        attempt++;
+        try {
+          uploadResponse = await _client.storage
+              .from('avatars')
+              .upload(
+                fileName,
+                file,
+                fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
+              );
+          print('Upload response (attempt $attempt): $uploadResponse');
+          break;
+        } catch (uploadErr) {
+          print('Upload attempt $attempt failed: $uploadErr');
+          if (attempt >= maxAttempts) {
+            rethrow;
+          }
+          // wait before retrying
+          await Future.delayed(Duration(milliseconds: 500 * attempt));
+        }
+      }
+
+      // Get the public URL
+      final imageUrl = _client.storage.from('avatars').getPublicUrl(fileName);
+      print('Public URL: $imageUrl');
+
+      // Update the profile picture URL in the database
+      try {
+        final updateResponse = await _client
+            .from('profiles')
+            .update({'avatar_url': imageUrl})
+            .eq('id', user.id)
+            .select();
+        print('Profile update response: $updateResponse');
+      } catch (dbError) {
+        print('Warning: Could not update database with image URL: $dbError');
+        // Continue anyway, the image is still uploaded to storage
+      }
+
+      return imageUrl;
+    } catch (e) {
+      print('Error uploading profile picture: $e');
+      print('Stack trace: ${StackTrace.current}');
+      rethrow;
+    }
   }
 }
 

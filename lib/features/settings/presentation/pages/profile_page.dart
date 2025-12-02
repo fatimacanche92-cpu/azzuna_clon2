@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -26,49 +28,117 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> loadProfile() async {
-    final user = Supabase.instance.client.auth.currentUser;
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) {
+        print('User is not logged in.');
+        return;
+      }
 
-    final data = await Supabase.instance.client
-        .from('profiles')
-        .select()
-        .eq('id', user!.id)
-        .single();
+      print('Loading profile for user: ${user.id}');
+      final data = await Supabase.instance.client
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .maybeSingle();
 
-    setState(() {
-      nameController.text = data['full_name'] ?? '';
-      phoneController.text = data['phone'] ?? '';
-      addressController.text = data['address'] ?? '';
-      scheduleController.text = data['schedule'] ?? '';
-      avatarUrl = data['avatar_url'];
-    });
+      if (data == null) {
+        print('No profile found, creating empty one...');
+        // Profile doesn't exist, try to create it
+        try {
+          await Supabase.instance.client.from('profiles').insert({
+            'id': user.id,
+            'full_name': user.email ?? 'Usuario',
+            'email': user.email,
+          });
+          print('Profile created successfully.');
+        } catch (e) {
+          print('Error creating profile: $e');
+        }
+        return;
+      }
+
+      if (mounted) {
+        setState(() {
+          nameController.text = data['full_name'] ?? '';
+          phoneController.text = data['phone'] ?? '';
+          addressController.text = data['address'] ?? '';
+          scheduleController.text = data['schedule'] ?? '';
+          avatarUrl = data['avatar_url'];
+        });
+      }
+      print('Profile loaded successfully.');
+    } catch (e) {
+      print('Error loading profile: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al cargar el perfil: $e')),
+        );
+      }
+    }
   }
 
   Future<void> saveProfile() async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
       print('User is not logged in.');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Debes iniciar sesión para guardar el perfil')),
+        );
+      }
       return;
     }
 
+    // Show loading indicator
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Guardando perfil...'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
     final updates = {
-      'full_name': nameController.text,
-      'phone': phoneController.text,
-      'address': addressController.text,
-      'schedule': scheduleController.text,
+      'full_name': nameController.text.trim(),
+      'phone': phoneController.text.trim(),
+      'address': addressController.text.trim(),
+      'schedule': scheduleController.text.trim(),
       'avatar_url': avatarUrl,
+      'updated_at': DateTime.now().toIso8601String(),
     };
     print('Saving profile with data: $updates');
 
     try {
-      await Supabase.instance.client.from('profiles').update(updates).eq('id', user.id);
+      await Supabase.instance.client
+          .from('profiles')
+          .update(updates)
+          .eq('id', user.id);
       print('Profile saved successfully.');
 
-      setState(() => isEditing = false);
-    } catch (e) {
-      print('Error saving profile: $e');
       if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al guardar el perfil: $e')),
+          const SnackBar(
+            content: Text('✓ Perfil guardado exitosamente'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        setState(() => isEditing = false);
+      }
+    } catch (e, st) {
+      print('Error saving profile: $e');
+      print('Stacktrace: $st');
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✗ Error al guardar: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
         );
       }
     }
@@ -81,29 +151,99 @@ class _ProfilePageState extends State<ProfilePage> {
     if (picked == null) return;
     print('Picked image: ${picked.path}');
 
-    final bytes = await picked.readAsBytes();
-    final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-    print('Uploading with filename: $fileName');
-
-    try {
-      await Supabase.instance.client.storage
-          .from('avatars')
-          .uploadBinary(fileName, bytes, fileOptions: const FileOptions(upsert: true));
-
-      final publicUrl = Supabase.instance.client.storage
-          .from('avatars')
-          .getPublicUrl(fileName);
-      print('Got public URL: $publicUrl');
-
-      setState(() {
-        avatarUrl = publicUrl;
-      });
-    } catch (e) {
-      print('Error uploading image: $e');
+    final file = File(picked.path);
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al subir la imagen: $e')),
+          const SnackBar(content: Text('Debes iniciar sesión para subir imagen')),
         );
+      }
+      return;
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Subiendo imagen...'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
+    final fileName = '${user.id}/profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    int attempts = 0;
+    const maxAttempts = 3;
+    
+    while (attempts < maxAttempts) {
+      attempts += 1;
+      try {
+        print('Uploading avatar attempt $attempts for $fileName');
+        
+        await Supabase.instance.client.storage
+            .from('avatars')
+            .upload(
+              fileName,
+              file,
+              fileOptions: const FileOptions(upsert: true, cacheControl: '3600'),
+            );
+
+        final publicUrl = Supabase.instance.client.storage
+            .from('avatars')
+            .getPublicUrl(fileName);
+        print('Got public URL: $publicUrl');
+
+        // Update profile in DB
+        try {
+          await Supabase.instance.client
+              .from('profiles')
+              .update({
+                'avatar_url': publicUrl,
+                'updated_at': DateTime.now().toIso8601String(),
+              })
+              .eq('id', user.id);
+          print('Profile avatar_url updated in database.');
+        } catch (dbErr) {
+          print('Warning: could not update profile avatar_url in DB: $dbErr');
+          // Don't fail the upload if DB update fails, the URL is still valid
+        }
+
+        if (mounted) {
+          setState(() {
+            avatarUrl = publicUrl;
+          });
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✓ Imagen subida exitosamente'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+        return;
+      } catch (e, st) {
+        print('Upload attempt $attempts failed: $e');
+        print('Stacktrace: $st');
+        
+        if (attempts >= maxAttempts) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('✗ Error al subir imagen (intento $attempts/$maxAttempts): $e'),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+          return;
+        } else {
+          // Wait before retrying
+          print('Retrying in 700ms...');
+          await Future.delayed(const Duration(milliseconds: 700));
+        }
       }
     }
   }
@@ -166,6 +306,13 @@ class _ProfilePageState extends State<ProfilePage> {
         TextField(
           controller: controller,
           enabled: enabled,
+          keyboardType: title.toLowerCase().contains('tel') ? TextInputType.number : TextInputType.text,
+          inputFormatters: title.toLowerCase().contains('tel')
+              ? <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ]
+              : null,
           decoration: const InputDecoration(
             filled: true,
             fillColor: Color(0xFFF2E0D5), // color crema Azzuna

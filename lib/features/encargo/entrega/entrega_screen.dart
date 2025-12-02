@@ -184,16 +184,24 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
         TextFormField(
           controller: _pickupPhoneController,
           decoration: const InputDecoration(
-            labelText: 'Teléfono',
+            labelText: 'Teléfono del cliente (10 dígitos)',
             border: OutlineInputBorder(),
           ),
-          keyboardType: TextInputType.phone,
+          keyboardType: TextInputType.number,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(10),
           ],
-          validator: (v) =>
-              v!.length != 10 ? 'El teléfono debe tener 10 dígitos' : null,
+          validator: (v) {
+            if (v == null || v.isEmpty) return null;
+            if (v.length != 10) {
+              return 'El teléfono debe tener exactamente 10 dígitos';
+            }
+            if (!RegExp(r'^[0-9]{10}$').hasMatch(v)) {
+              return 'Solo se permiten números';
+            }
+            return null;
+          },
         ),
         const SizedBox(height: 16),
         _buildEmailField(),

@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_app/core/models/pago_model.dart';
+import 'package:flutter_app/core/models/arreglo_model.dart';
 import 'package:flutter_app/core/services/encargo_service.dart';
+import 'package:flutter_app/features/orders/presentation/providers/order_provider.dart';
 
 class PagoScreen extends ConsumerStatefulWidget {
   const PagoScreen({super.key});
@@ -28,18 +32,96 @@ class _PagoScreenState extends ConsumerState<PagoScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor, selecciona un método de pago'),
+          backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    final newPago = Pago(paymentMethod: _paymentMethod);
-    ref.read(encargoServiceProvider.notifier).updatePago(newPago);
-    // Here you would normally proceed to a real payment gateway
+    // Show loading
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Pedido completado (simulado)')),
+      const SnackBar(
+        content: Text('Procesando pedido...'),
+        duration: Duration(seconds: 3),
+      ),
     );
-    context.go('/encargo/pago-exitoso');
+
+    // Use dynamic price stored in the UI (based on selected arreglo)
+    final encargo = ref.watch(encargoServiceProvider);
+    final arreglo = encargo.arreglo;
+
+    double _computeBasePrice() {
+      switch (arreglo?.size) {
+        case ArregloSize.p:
+          return 500.0;
+        case ArregloSize.m:
+          return 750.0;
+        case ArregloSize.g:
+          return 1000.0;
+        case ArregloSize.eg:
+          return 1500.0;
+        default:
+          return 750.0;
+      }
+    }
+
+    double _computeShipping() {
+      final colorsCount = arreglo?.colors.length ?? 0;
+      final base = 50.0 + (colorsCount * 10);
+      return base.clamp(50.0, 200.0);
+    }
+
+    final basePrice = encargo.pago?.basePrice ?? _computeBasePrice();
+    final shippingCost = encargo.pago?.shippingCost ?? _computeShipping();
+    final total = basePrice + shippingCost;
+
+    final newPago = Pago(
+      paymentMethod: _paymentMethod,
+      basePrice: basePrice,
+      shippingCost: shippingCost,
+    );
+    ref.read(encargoServiceProvider.notifier).updatePago(newPago);
+    
+    // Save the encargo to Supabase
+    ref.read(encargoServiceProvider.notifier).saveEncargo().then((success) {
+      if (success && mounted) {
+        print('Order saved successfully, invalidating provider');
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✓ Pedido completado exitosamente'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        // Invalidate the orders provider to refresh the list
+        ref.invalidate(allOrdersProvider);
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) context.go('/encargo/pago-exitoso');
+        });
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✗ Error al guardar el pedido. Intenta de nuevo.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }).catchError((error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $error'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      print('Error saving order: $error');
+    });
   }
 
   @override
