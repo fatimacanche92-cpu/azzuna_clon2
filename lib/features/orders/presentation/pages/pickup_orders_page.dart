@@ -12,7 +12,7 @@ class PickupOrdersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pickupOrdersAsync = ref.watch(pickupOrdersProvider);
+    final ordersAsync = ref.watch(allOrdersProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -28,34 +28,32 @@ class PickupOrdersPage extends ConsumerWidget {
         foregroundColor: Colors.black,
         elevation: 1,
       ),
-      body: ref
-          .watch(allOrdersProvider)
-          .when(
-            data: (orders) {
-              final pickupOrders = orders
-                  .where(
-                    (order) => order.deliveryType == OrderDeliveryType.recoger,
-                  )
-                  .toList();
+      body: ordersAsync.when(
+        data: (orders) {
+          final pickupOrders = orders
+              .where(
+                (order) => order.deliveryType == OrderDeliveryType.recoger,
+              )
+              .toList();
 
-              if (pickupOrders.isEmpty) {
-                return const Center(
-                  child: Text('No hay pedidos para recoger.'),
-                );
-              }
+          if (pickupOrders.isEmpty) {
+            return const Center(
+              child: Text('No hay pedidos para recoger.'),
+            );
+          }
 
-              return ListView.builder(
-                padding: const EdgeInsets.all(16.0),
-                itemCount: pickupOrders.length,
-                itemBuilder: (context, index) {
-                  final order = pickupOrders[index];
-                  return _PickupOrderItem(order: order);
-                },
-              );
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: pickupOrders.length,
+            itemBuilder: (context, index) {
+              final order = pickupOrders[index];
+              return _PickupOrderItem(order: order);
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) => Center(child: Text('Error: $error')),
-          ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      ),
     );
   }
 }

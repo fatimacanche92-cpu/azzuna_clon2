@@ -59,6 +59,8 @@ dependencies:
   path: ^1.9.0
   uuid: ^4.5.2
   url_launcher: ^6.3.2
+  tarjetas_flores:
+    path: ../velocidad
 
 dev_dependencies:
   flutter_test:

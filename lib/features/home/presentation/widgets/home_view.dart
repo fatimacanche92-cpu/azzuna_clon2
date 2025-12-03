@@ -10,11 +10,34 @@ class HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final shipping = ref.watch(shippingOrdersProvider);
-    final pickup = ref.watch(pickupOrdersProvider);
+    final ordersAsync = ref.watch(allOrdersProvider);
 
-    final shippingCount = shipping.length;
-    final pickupCount = pickup.length;
+    // Compute counts from the real orders list when available
+    int shippingCount = 0;
+    int pickupCount = 0;
+    bool loading = false;
+
+    ordersAsync.when(
+      data: (orders) {
+        shippingCount = orders
+            .where((o) => o.deliveryType == OrderDeliveryType.envio)
+            .length;
+        pickupCount = orders
+            .where((o) => o.deliveryType == OrderDeliveryType.recoger)
+            .length;
+        loading = false;
+      },
+      loading: () {
+        loading = true;
+        shippingCount = 0;
+        pickupCount = 0;
+      },
+      error: (_, __) {
+        loading = false;
+        shippingCount = 0;
+        pickupCount = 0;
+      },
+    );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -85,6 +108,7 @@ class HomeView extends ConsumerWidget {
                   context: context,
                   title: 'Por envío',
                   count: shippingCount,
+                  icon: Icons.local_shipping,
                   onTap: () => GoRouter.of(context).go('/shipping-orders'),
                 ),
               ),
@@ -94,6 +118,7 @@ class HomeView extends ConsumerWidget {
                   context: context,
                   title: 'Por recoger',
                   count: pickupCount,
+                  icon: Icons.storefront,
                   onTap: () => GoRouter.of(context).go('/pickup-orders'),
                 ),
               ),
@@ -219,6 +244,7 @@ class HomeView extends ConsumerWidget {
     required BuildContext context,
     required String title,
     required int count,
+    required IconData icon,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -250,18 +276,57 @@ class HomeView extends ConsumerWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryMagenta,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    count.toString(),
-                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      CircleAvatar(
+                        radius: 22,
+                        backgroundColor: AppColors.purpleLight.withValues(alpha: 0.15),
+                        child: Icon(icon, color: AppColors.accentPurple, size: 22),
+                      ),
+                      if (loading)
+                        const Positioned(
+                          right: -2,
+                          top: -2,
+                          child: SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: Center(
+                              child: SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      else if (count > 0)
+                        Positioned(
+                          right: -6,
+                          top: -6,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.white, width: 1.5),
+                            ),
+                            constraints: const BoxConstraints(minWidth: 20),
+                            child: Center(
+                              child: Text(
+                                count > 99 ? '99+' : count.toString(),
+                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 12),

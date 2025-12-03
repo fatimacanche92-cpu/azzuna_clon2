@@ -11,6 +11,8 @@ class ShippingOrdersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ordersAsync = ref.watch(allOrdersProvider);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -25,32 +27,30 @@ class ShippingOrdersPage extends ConsumerWidget {
         foregroundColor: Colors.black,
         elevation: 1,
       ),
-      body: ref
-          .watch(allOrdersProvider)
-          .when(
-            data: (orders) {
-              final shippingOrders = orders
-                  .where(
-                    (order) => order.deliveryType == OrderDeliveryType.envio,
-                  )
-                  .toList();
+      body: ordersAsync.when(
+        data: (orders) {
+          final shippingOrders = orders
+              .where(
+                (order) => order.deliveryType == OrderDeliveryType.envio,
+              )
+              .toList();
 
-              if (shippingOrders.isEmpty) {
-                return const Center(child: Text('No hay pedidos para enviar.'));
-              }
+          if (shippingOrders.isEmpty) {
+            return const Center(child: Text('No hay pedidos para enviar.'));
+          }
 
-              return ListView.builder(
-                padding: const EdgeInsets.all(16.0),
-                itemCount: shippingOrders.length,
-                itemBuilder: (context, index) {
-                  final order = shippingOrders[index];
-                  return _ShippingOrderItem(order: order);
-                },
-              );
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: shippingOrders.length,
+            itemBuilder: (context, index) {
+              final order = shippingOrders[index];
+              return _ShippingOrderItem(order: order);
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) => Center(child: Text('Error: $error')),
-          ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      ),
     );
   }
 }

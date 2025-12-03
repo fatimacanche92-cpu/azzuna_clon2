@@ -6,7 +6,12 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_app/core/models/entrega_model.dart';
 import 'package:flutter_app/core/services/encargo_service.dart';
-import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:tarjetas_flores/services/stable_diffusion_service.dart';
+import 'package:tarjetas_flores/services/message_generator.dart';
+import 'package:tarjetas_flores/models/card_data.dart';
+import 'package:tarjetas_flores/widgets/card_factory.dart';
+import 'package:screenshot/screenshot.dart';
 
 class EntregaScreen extends ConsumerStatefulWidget {
   const EntregaScreen({super.key});
@@ -29,7 +34,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
   final _emailController = TextEditingController();
 
   // New state for AI Card feature
-  bool _wantsNote = false;
+  
   Uint8List? _generatedCardData;
 
   @override
@@ -45,11 +50,6 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
       _recipientNameController.text = existing.recipientName ?? '';
       _noteController.text = existing.note ?? '';
       _remitenteController.text = existing.remitente ?? '';
-
-      // If a note exists, the section should be open
-      if (existing.note != null && existing.note!.isNotEmpty) {
-        _wantsNote = true;
-      }
     }
     // Also check for existing card data in the main encargo model
     _generatedCardData = ref.read(encargoServiceProvider).cardData;
@@ -73,7 +73,7 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
           ? 'Anónimo'
           : _remitenteController.text;
 
-      final note = _wantsNote ? _noteController.text : null;
+      final note = null;
 
       final newEntrega = Entrega(
         deliveryType: _deliveryType,
@@ -242,41 +242,18 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
         _buildEmailField(),
         const SizedBox(height: 24),
         const Divider(),
-        SwitchListTile(
-          title: const Text('¿Lleva nota / dedicatoria?'),
-          value: _wantsNote,
-          onChanged: (bool value) {
-            setState(() {
-              _wantsNote = value;
-            });
-          },
-        ),
-        if (_wantsNote)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _noteController,
-                  decoration: const InputDecoration(
-                    labelText: 'Escribe tu nota aquí...',
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 16),
-                _AiCardGenerator(
-                  noteController: _noteController,
-                  initialCardData: _generatedCardData,
-                  onCardUpdated: (data) {
-                    ref
-                        .read(encargoServiceProvider.notifier)
-                        .updateCardData(data);
-                  },
-                ),
-              ],
-            ),
+        // Tarjeta AI: genera solo plantilla y permite seleccionar flor
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: _AiCardGenerator(
+            recipientController: _recipientNameController,
+            senderController: _remitenteController,
+            initialCardData: _generatedCardData,
+            onCardUpdated: (data) {
+              ref.read(encargoServiceProvider.notifier).updateCardData(data);
+            },
           ),
+        ),
         const Divider(),
       ],
     );
@@ -286,12 +263,14 @@ class _EntregaScreenState extends ConsumerState<EntregaScreen> {
 // --- AI CARD GENERATOR WIDGET ---
 
 class _AiCardGenerator extends ConsumerStatefulWidget {
-  final TextEditingController noteController;
+  final TextEditingController recipientController;
+  final TextEditingController senderController;
   final Uint8List? initialCardData;
   final Function(Uint8List? data) onCardUpdated;
 
   const _AiCardGenerator({
-    required this.noteController,
+    required this.recipientController,
+    required this.senderController,
     this.initialCardData,
     required this.onCardUpdated,
   });
@@ -303,6 +282,10 @@ class _AiCardGenerator extends ConsumerStatefulWidget {
 class _AiCardGeneratorState extends ConsumerState<_AiCardGenerator> {
   Uint8List? _cardData;
   bool _isGenerating = false;
+  CardTemplate _selectedTemplate = CardTemplate.spring;
+  SpecialOccasion _selectedOccasion = SpecialOccasion.none;
+  final ScreenshotController _screenshotController = ScreenshotController();
+  String? _generatedBackgroundPath;
 
   @override
   void initState() {
@@ -311,38 +294,51 @@ class _AiCardGeneratorState extends ConsumerState<_AiCardGenerator> {
   }
 
   Future<void> _generateCard({bool isRegenerating = false}) async {
-    if (widget.noteController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor, escribe una nota para usarla como prompt.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
     setState(() => _isGenerating = true);
 
     try {
-      // Simulate AI generation by fetching a random image from an API
-      final seed = isRegenerating
-          ? DateTime.now().millisecondsSinceEpoch
-          : 'fixed_seed';
-      final response = await http.get(
-        Uri.parse('https://picsum.photos/seed/$seed/500/300'),
+      // Build a prompt from selected flower, template and occasion
+      final prompt = '${_getTemplateName(_selectedTemplate)} template, ${MessageGenerator.getOccasionName(_selectedOccasion)} themed floral background';
+
+      final path = await StableDiffusionService.generateBackground(
+        occasion: _selectedOccasion,
+        template: _selectedTemplate,
+        customPrompt: prompt,
       );
 
-      if (response.statusCode == 200) {
+      if (path == null) throw Exception('La generación no devolvió ruta de imagen');
+
+      // Precache the generated background to ensure it's loaded in the widget tree
+      final file = File(path);
+      if (!await file.exists()) throw Exception('El archivo de fondo generado no existe: $path');
+      final imageProvider = FileImage(file);
+      await precacheImage(imageProvider, context);
+
+      // store generated background path so CardFactory can use it when rendering
+      setState(() => _generatedBackgroundPath = path);
+
+      // give framework a moment to rebuild with the new background
+      await Future.delayed(const Duration(milliseconds: 400));
+
+      final image = await _screenshotController.capture(delay: const Duration(milliseconds: 300), pixelRatio: 2.0);
+
+      if (image != null) {
         setState(() {
-          _cardData = response.bodyBytes;
+          _cardData = image;
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Tarjeta generada correctamente'),
+            backgroundColor: Colors.green,
+          ),
+        );
       } else {
-        throw Exception('Failed to load image');
+        throw Exception('No se pudo capturar la tarjeta');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al generar la tarjeta: $e'),
+          content: Text('Error: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -352,6 +348,15 @@ class _AiCardGeneratorState extends ConsumerState<_AiCardGenerator> {
   }
 
   void _saveCard() {
+    if (_cardData == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, genera una tarjeta primero'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
     widget.onCardUpdated(_cardData);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -361,81 +366,211 @@ class _AiCardGeneratorState extends ConsumerState<_AiCardGenerator> {
     );
   }
 
-  void _shareCard() {
-    if (_cardData == null) return;
-    // TODO: Implement sharing logic (e.g., using 'share_plus' package)
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Generar Tarjeta con IA',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-
-          Container(
-            height: 180,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
+    return SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Generar Tarjeta con IA',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            child: _isGenerating
-                ? const Center(child: CircularProgressIndicator())
-                : (_cardData != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.memory(_cardData!, fit: BoxFit.cover),
-                        )
-                      : const Center(
-                          child: Icon(
-                            Icons.image_outlined,
-                            size: 40,
-                            color: Colors.grey,
-                          ),
-                        )),
-          ),
-          const SizedBox(height: 12),
-
-          if (_cardData == null)
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: _isGenerating ? null : _generateCard,
-                icon: const Icon(Icons.auto_awesome),
-                label: const Text('Generar tarjeta con IA'),
+            const SizedBox(height: 16),
+            // (La selección de flor se ha eliminado — la plantilla se adapta a la ocasión)
+            // Selector de Ocasión
+            Text(
+              'Ocasión Especial',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<SpecialOccasion>(
+                  value: _selectedOccasion,
+                  isExpanded: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  items: SpecialOccasion.values.map((occasion) {
+                    return DropdownMenuItem(
+                      value: occasion,
+                      child: Text(MessageGenerator.getOccasionName(occasion)),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedOccasion = value;
+                        // Auto-adapt template based on occasion
+                        _selectedTemplate = _templateForOccasion(value);
+                      });
+                    }
+                  },
+                ),
               ),
             ),
-
-          if (_cardData != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                TextButton(
-                  onPressed: () => _generateCard(isRegenerating: true),
-                  child: const Text('Regenerar'),
-                ),
-                TextButton(
-                  onPressed: _shareCard,
-                  child: const Text('Compartir'),
-                ),
-                ElevatedButton(
-                  onPressed: _saveCard,
-                  child: const Text('Guardar'),
-                ),
-              ],
+            const SizedBox(height: 16),
+            // El diseño se selecciona automáticamente según la ocasión especial
+            Text(
+              'Diseño automático según la ocasión',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
             ),
-        ],
+            const SizedBox(height: 12),
+            // Preview de la tarjeta
+            Text(
+              'Previsualización',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.4,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: _isGenerating
+                  ? const Center(child: CircularProgressIndicator())
+                  : (_cardData != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.memory(_cardData!, fit: BoxFit.contain),
+                        )
+                      : Screenshot(
+                          controller: _screenshotController,
+                          child: Center(
+                            child: SizedBox(
+                              width: 300,
+                              height: 420,
+                              child: CardFactory.createCard(
+                                cardData: CardData(
+                                  recipientName: widget.recipientController.text.trim(),
+                                  message: '',
+                                  senderName: widget.senderController.text.trim(),
+                                  template: _selectedTemplate,
+                                  occasion: _selectedOccasion,
+                                  backgroundImageUrl: _generatedBackgroundPath,
+                                  useAIGeneratedBackground: _generatedBackgroundPath != null,
+                                ),
+                                width: 300,
+                                height: 420,
+                              ),
+                            ),
+                          ),
+                        )),
+            ),
+            const SizedBox(height: 16),
+            // Botones
+            if (_cardData == null)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _isGenerating ? null : _generateCard,
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text('Generar Tarjeta con IA'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              )
+            else
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton.icon(
+                    onPressed: () => setState(() => _cardData = null),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Regenerar'),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _saveCard,
+                    icon: const Icon(Icons.check),
+                    label: const Text('Guardar'),
+                  ),
+                ],
+              ),
+          ],
+        ),
       ),
     );
+  }
+
+  String _getTemplateEmoji(CardTemplate template) {
+    switch (template) {
+      case CardTemplate.romantic:
+        return '🌹';
+      case CardTemplate.elegant:
+        return '🌸';
+      case CardTemplate.modern:
+        return '💐';
+      case CardTemplate.classic:
+        return '🌺';
+      case CardTemplate.spring:
+        return '🌼';
+      case CardTemplate.wedding:
+        return '💍';
+    }
+  }
+
+  String _getTemplateName(CardTemplate template) {
+    switch (template) {
+      case CardTemplate.romantic:
+        return 'Romántica';
+      case CardTemplate.elegant:
+        return 'Elegante';
+      case CardTemplate.modern:
+        return 'Moderna';
+      case CardTemplate.classic:
+        return 'Clásica';
+      case CardTemplate.spring:
+        return 'Primaveral';
+      case CardTemplate.wedding:
+        return 'Boda';
+    }
+  }
+  CardTemplate _templateForOccasion(SpecialOccasion occasion) {
+    switch (occasion) {
+      case SpecialOccasion.valentines:
+        return CardTemplate.romantic;
+      case SpecialOccasion.mothersDay:
+        return CardTemplate.elegant;
+      case SpecialOccasion.birthday:
+        return CardTemplate.modern;
+      case SpecialOccasion.wedding:
+        return CardTemplate.wedding;
+      case SpecialOccasion.anniversary:
+        return CardTemplate.romantic;
+      case SpecialOccasion.graduation:
+        return CardTemplate.modern;
+      case SpecialOccasion.sympathy:
+        return CardTemplate.classic;
+      case SpecialOccasion.congratulations:
+        return CardTemplate.modern;
+      case SpecialOccasion.thankYou:
+        return CardTemplate.classic;
+      case SpecialOccasion.christmas:
+        return CardTemplate.classic;
+      case SpecialOccasion.newYear:
+        return CardTemplate.modern;
+      case SpecialOccasion.easter:
+        return CardTemplate.spring;
+      case SpecialOccasion.halloween:
+        return CardTemplate.modern;
+      case SpecialOccasion.none:
+        return CardTemplate.spring;
+    }
   }
 }

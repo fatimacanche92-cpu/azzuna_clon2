@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:math';
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_app/shared/services/supabase_service.dart';
@@ -92,11 +93,63 @@ class EncargoStateNotifier extends StateNotifier<Encargo> {
         'price': computedPrice,
         'delivery_type': entrega.deliveryType == DeliveryType.pasaPorEl ? 'recoger' : 'envio',
         'delivery_address': entrega.deliveryAddress,
+        'public_note': entrega.note,
+        'sender_name': entrega.remitente,
         'payment_status': 'pendiente',
         'scheduled_date': DateTime.now().toIso8601String(),
         'created_at': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
       };
+
+      // If there's card data in the encargo, try to upload it to Supabase Storage
+      if (state.cardData != null && state.cardData!.isNotEmpty) {
+        try {
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+          final localFileName = 'card_$timestamp.png';
+          final bucketPath = '${user.id}/$localFileName';
+
+          final tmpDir = Directory.systemTemp;
+          final tmpFile = File('${tmpDir.path}/$localFileName');
+          await tmpFile.writeAsBytes(state.cardData!);
+
+          // Attempt upload with retries
+          const int maxAttempts = 3;
+          int attempt = 0;
+          while (attempt < maxAttempts) {
+            attempt++;
+            try {
+              await _supabase.storage
+                  .from('cards')
+                  .upload(
+                    bucketPath,
+                    tmpFile,
+                    fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
+                  );
+              break;
+            } catch (uploadErr) {
+              print('Upload attempt $attempt failed for card: $uploadErr');
+              if (attempt >= maxAttempts) rethrow;
+              await Future.delayed(Duration(milliseconds: 500 * attempt));
+            }
+          }
+
+          // Get public URL and attach
+          try {
+            final imageUrl = _supabase.storage.from('cards').getPublicUrl(bucketPath);
+            orderData['card_image_url'] = imageUrl;
+            print('Card image public URL: $imageUrl');
+          } catch (urlErr) {
+            print('Warning: could not obtain public URL for card image: $urlErr');
+          }
+
+          // cleanup temp file
+          try {
+            if (await tmpFile.exists()) await tmpFile.delete();
+          } catch (_) {}
+        } catch (e) {
+          print('Warning: failed to upload card image: $e');
+        }
+      }
 
       final response = await _supabase.from('orders').insert(orderData).select();
 

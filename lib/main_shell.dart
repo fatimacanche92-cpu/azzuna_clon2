@@ -19,10 +19,20 @@ class MainShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(allOrdersProvider);
     int ordersCount = 0;
+    bool ordersLoaded = false;
     ordersAsync.when(
-      data: (orders) => ordersCount = orders.length,
-      loading: () => ordersCount = 0,
-      error: (_, __) => ordersCount = 0,
+      data: (orders) {
+        ordersCount = orders.length;
+        ordersLoaded = true;
+      },
+      loading: () {
+        ordersCount = 0;
+        ordersLoaded = false;
+      },
+      error: (_, __) {
+        ordersCount = 0;
+        ordersLoaded = false;
+      },
     );
 
     return Scaffold(
@@ -37,7 +47,8 @@ class MainShell extends ConsumerWidget {
               clipBehavior: Clip.none,
               children: [
                 const Icon(Icons.list_alt),
-                if (ordersCount > 0)
+                // Show badge only when not currently viewing the Orders branch
+                if (navigationShell.currentIndex != 1 && ordersCount > 0)
                   Positioned(
                     right: -6,
                     top: -6,
